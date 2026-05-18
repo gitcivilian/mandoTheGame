@@ -1,4 +1,4 @@
-let currentDifficulty = { mult: 1.0, beskar: 2 };
+        let currentDifficulty = { mult: 1.0, beskar: 2 };
 
         function setDiff(lvl, el) {
             document.querySelectorAll('.diff-btn').forEach(b => b.classList.remove('active'));
@@ -14,11 +14,7 @@ let currentDifficulty = { mult: 1.0, beskar: 2 };
             hp: { name: "Beskar Plating (Max HP)", baseCost: 50, maxLvl: 10, valPerLvl: 20 },
             heat: { name: "Cooling Systems (Heat Drain)", baseCost: 40, maxLvl: 10, valPerLvl: 5 },
             dash: { name: "Jetpack Thrusters (Dash Regen)", baseCost: 60, maxLvl: 5, valPerLvl: 0.3 },
-            damage: { name: "Amban Rifle Core (Damage)", baseCost: 100, maxLvl: 5, valPerLvl: 1 },
-            speed: { name: "Servo Overdrive (Move Speed)", baseCost: 80, maxLvl: 5, valPerLvl: 0.05 },
-            bacta: { name: "Bacta Reserve (Start with stims)", baseCost: 150, maxLvl: 3, valPerLvl: 1 },
-            shield: { name: "Overshield Generator (30HP shield)", baseCost: 250, maxLvl: 1, valPerLvl: 30 },
-            magnet: { name: "Beskar Magnetism (2x pickup radius)", baseCost: 200, maxLvl: 1, valPerLvl: 2 }
+            damage: { name: "Amban Rifle Core (Damage)", baseCost: 100, maxLvl: 5, valPerLvl: 1 }
         };
 
         let save = {
@@ -29,13 +25,6 @@ let currentDifficulty = { mult: 1.0, beskar: 2 };
             lvl_damage: parseInt(localStorage.getItem('mando_lvl_damage')) || 1,
             bestWave: parseInt(localStorage.getItem('mando_best_wave')) || 0,
             totalKills: parseInt(localStorage.getItem('mando_total_kills')) || 0,
-            totalRuns: parseInt(localStorage.getItem('mando_total_runs')) || 0,
-            bestCombo: parseFloat(localStorage.getItem('mando_best_combo')) || 1,
-            lvl_speed: parseInt(localStorage.getItem('mando_lvl_speed')) || 1,
-            lvl_bacta: parseInt(localStorage.getItem('mando_lvl_bacta')) || 0,
-            lvl_shield: parseInt(localStorage.getItem('mando_lvl_shield')) || 0,
-            lvl_magnet: parseInt(localStorage.getItem('mando_lvl_magnet')) || 0,
-            prestige: parseInt(localStorage.getItem('mando_prestige')) || 0,
         };
 
         function saveGame() {
@@ -46,13 +35,6 @@ let currentDifficulty = { mult: 1.0, beskar: 2 };
             localStorage.setItem('mando_lvl_damage', save.lvl_damage);
             localStorage.setItem('mando_best_wave', save.bestWave);
             localStorage.setItem('mando_total_kills', save.totalKills);
-            localStorage.setItem('mando_total_runs', save.totalRuns);
-            localStorage.setItem('mando_best_combo', save.bestCombo);
-            localStorage.setItem('mando_lvl_speed', save.lvl_speed);
-            localStorage.setItem('mando_lvl_bacta', save.lvl_bacta);
-            localStorage.setItem('mando_lvl_shield', save.lvl_shield);
-            localStorage.setItem('mando_lvl_magnet', save.lvl_magnet);
-            localStorage.setItem('mando_prestige', save.prestige);
             updateMenuUI();
         }
 
@@ -94,19 +76,9 @@ let currentDifficulty = { mult: 1.0, beskar: 2 };
         }
         function updateMenuUI() {
             document.getElementById('menu-beskar').innerText = save.beskar;
-        const RANKS = [{name:'FOUNDLING',k:0},{name:'WARRIOR',k:20},{name:'HUNTER',k:60},{name:'BOUNTY HUNTER',k:150},{name:'GUILD MASTER',k:300},{name:'LEGEND OF MANDALORE',k:600}];
-        let r = RANKS[0]; for(let rk of RANKS) { if(save.totalKills >= rk.k) r = rk; }
-        let rankEl = document.getElementById('menu-rank-label');
-        if (rankEl) {
-                let suffix = save.prestige > 0 ? ' [NG+' + save.prestige + ']' : '';
-                rankEl.innerText = '⬡ ' + r.name + suffix;
-                if(save.prestige > 0) rankEl.style.color = '#00ffaa';
-            }
             document.getElementById('forge-beskar').innerText = save.beskar;
             let bw = document.getElementById('menu-best-wave'); if (bw) bw.innerText = save.bestWave || '-';
             let mk = document.getElementById('menu-kills'); if (mk) mk.innerText = save.totalKills || '-';
-            let mc = document.getElementById('menu-best-combo'); if (mc) mc.innerText = save.bestCombo > 1 ? save.bestCombo.toFixed(1) + 'x' : '-';
-            let mr = document.getElementById('menu-runs'); if (mr) mr.innerText = save.totalRuns || '-';
         }
         function renderUpgrades() {
             let html = '';
@@ -148,7 +120,7 @@ let currentDifficulty = { mult: 1.0, beskar: 2 };
         }
         function wipeSave() {
             if (!confirm('This Is The Way... to delete everything. Are you sure?')) return;
-            localStorage.clear(); save.beskar = 0; save.lvl_hp = 1; save.lvl_heat = 1; save.lvl_dash = 1; save.lvl_damage = 1; save.lvl_speed = 1; save.lvl_bacta = 0; save.lvl_shield = 0; save.lvl_magnet = 0; save.bestWave = 0; save.totalKills = 0; save.totalRuns = 0; save.bestCombo = 1; save.prestige = 0;
+            localStorage.clear(); save.beskar = 0; save.lvl_hp = 1; save.lvl_heat = 1; save.lvl_dash = 1; save.lvl_damage = 1; save.bestWave = 0; save.totalKills = 0;
             updateMenuUI();
             alert('Save wiped. This is the Way.');
         }
@@ -160,35 +132,6 @@ let currentDifficulty = { mult: 1.0, beskar: 2 };
             let mk = document.getElementById('menu-kills'); if (mk) mk.innerText = save.totalKills || '-';
         }
         function startGame() { engine.start(ExtractionMode); }
-        
-        function buyMysteryBox() {
-            if (save.beskar < 100) {
-                alert('Not enough Beskar secured, Mandalorian.');
-                return;
-            }
-            save.beskar -= 100;
-            let weapons = ['heavy', 'sniper', 'thermal', 'vibroblade'];
-            let chosen = weapons[Math.floor(Math.random() * weapons.length)];
-            let ammos = { heavy: 120, sniper: 20, thermal: 10, vibroblade: 40 };
-            
-            // Acquire to Slot 3 (or override Slot 4)
-            save.lvl_bacta = (save.lvl_bacta || 0) + 1; // minor permanent perk also
-            saveGame();
-            renderUpgrades();
-            
-            audio.powerup && audio.powerup() || audio.shoot();
-            alert('The Armorer has forged you a mysterious ' + chosen.toUpperCase() + ' drop for your next mission!');
-        }
-        
-        function triggerPrestige() {
-            save.prestige = (save.prestige || 0) + 1;
-            save.beskar = Math.floor(save.beskar * 1.5); // bonus payout multiplier
-            saveGame();
-            document.getElementById('end-screen').style.display = 'none';
-            showMainMenu();
-            audio.powerup && audio.powerup();
-            alert('Creed ascended! Welcome to NEW GAME+ (NG+' + save.prestige + ') - Blaster fire upgraded, difficulty escalated!');
-        }
 
         // Daily Contract system
         const DAILY_CONTRACTS = [
@@ -254,9 +197,9 @@ let currentDifficulty = { mult: 1.0, beskar: 2 };
                     gain.gain.setValueAtTime(vol1, n); gain.gain.exponentialRampToValueAtTime(Math.max(vol2, 0.001), n + dur);
                     noiseNode.connect(filter); filter.connect(gain); gain.connect(this.ctx.destination);
                     noiseNode.start(n); noiseNode.stop(n + dur);
-                } catch (e) { }
+                } catch(e){}
             }
-            shoot() {
+            shoot() { 
                 let aw = (engine && engine.scene && engine.scene.player) ? engine.scene.player.getActiveWeapon() : 'blaster';
                 if (aw === 'sniper') {
                     this.playTone('sniper', 1200, 50, 0.6, 0.25, 'sawtooth');
@@ -272,11 +215,11 @@ let currentDifficulty = { mult: 1.0, beskar: 2 };
                 }
             }
             bossShoot() { this.playTone('boss', 200, 50, 0.5, 0.3, 'sawtooth'); }
-            hit() {
-                this.playTone('hit', 160, 40, 0.1, 0.15, 'square');
+            hit() { 
+                this.playTone('hit', 160, 40, 0.1, 0.15, 'square'); 
                 this.playNoise(0.08, 0.08, 0.001, 'bandpass', 500);
             }
-            kill() {
+            kill() { 
                 let now = this.ctx.currentTime;
                 let notes = [523.25, 659.25, 783.99, 1046.50]; // C5, E5, G5, C6 (highly rewarding ascending chord!)
                 notes.forEach((freq, idx) => {
@@ -288,11 +231,11 @@ let currentDifficulty = { mult: 1.0, beskar: 2 };
                     o.start(now + idx * 0.03); o.stop(now + idx * 0.03 + 0.12);
                 });
             }
-            beskar() {
+            beskar() { 
                 this.playTone('beskar1', 2800, 3200, 0.18, 0.08, 'sine');
                 setTimeout(() => this.playTone('beskar2', 3600, 4000, 0.12, 0.06, 'sine'), 30);
             }
-            powerup() {
+            powerup() { 
                 let now = this.ctx.currentTime;
                 let notes = [261.63, 329.63, 392.00, 523.25, 659.25, 783.99, 1046.50]; // Beautiful full scale arpeggio
                 notes.forEach((freq, idx) => {
@@ -305,20 +248,20 @@ let currentDifficulty = { mult: 1.0, beskar: 2 };
                 });
             }
             dash() { this.playTone('dash', 350, 1050, 0.2, 0.08, 'sine'); }
-            vent() {
+            vent() { 
                 this.playNoise(0.55, 0.18, 0.001, 'bandpass', 1600);
                 this.playTone('vent2', 900, 150, 0.45, 0.08, 'sawtooth');
             }
-            overheat() {
-                this.playTone('overheat', 150, 60, 0.5, 0.18, 'sawtooth');
+            overheat() { 
+                this.playTone('overheat', 150, 60, 0.5, 0.18, 'sawtooth'); 
                 this.playNoise(0.3, 0.05, 0.001, 'lowpass', 400);
             }
             orbitalCall() { this.playTone('call', 600, 850, 0.7, 0.08, 'sine'); setTimeout(() => this.orbitalStrike(), 1200); }
-            orbitalStrike() {
-                this.playTone('strike', 140, 10, 1.8, 0.55, 'sawtooth');
+            orbitalStrike() { 
+                this.playTone('strike', 140, 10, 1.8, 0.55, 'sawtooth'); 
                 this.playNoise(1.8, 0.4, 0.001, 'lowpass', 250);
             }
-            alarm() {
+            alarm() { 
                 let now = this.ctx.currentTime;
                 // Double synth retro siren sweep
                 let o1 = this.ctx.createOscillator(); let o2 = this.ctx.createOscillator();
@@ -329,7 +272,7 @@ let currentDifficulty = { mult: 1.0, beskar: 2 };
                 g.gain.setValueAtTime(0.08, now); g.gain.exponentialRampToValueAtTime(0.001, now + 0.3);
                 o1.start(now); o1.stop(now + 0.3); o2.start(now); o2.stop(now + 0.3);
             }
-            heal() {
+            heal() { 
                 let now = this.ctx.currentTime;
                 let notes = [329.63, 392.00, 523.25, 659.25, 783.99]; // Uplifting major chord
                 notes.forEach((freq, idx) => {
@@ -349,7 +292,7 @@ let currentDifficulty = { mult: 1.0, beskar: 2 };
                 o.type = 'triangle'; o.frequency.setValueAtTime(60, now); o.frequency.exponentialRampToValueAtTime(20, now + 0.12);
                 g.gain.setValueAtTime(0.28, now); g.gain.exponentialRampToValueAtTime(0.001, now + 0.12);
                 o.start(now); o.stop(now + 0.12);
-
+                
                 setTimeout(() => {
                     if (!this.ctx) return;
                     let now2 = this.ctx.currentTime;
@@ -460,17 +403,9 @@ let currentDifficulty = { mult: 1.0, beskar: 2 };
         }
 
         class Wall {
-            constructor(x, y, w, h, dest = false) { 
-                this.pos = new Vector2(x, y); this.w = w; this.h = h; 
-                this.destructible = dest;
-                this.hp = 100;
-            }
+            constructor(x, y, w, h) { this.pos = new Vector2(x, y); this.w = w; this.h = h; }
             draw(ctx) {
-                if (this.destructible) {
-                    ctx.fillStyle = 'rgba(60, 35, 15, 0.8)'; ctx.strokeStyle = '#ff7700'; ctx.lineWidth = 2;
-                } else {
-                    ctx.fillStyle = 'rgba(10, 15, 20, 0.8)'; ctx.strokeStyle = '#00aaff'; ctx.lineWidth = 2;
-                }
+                ctx.fillStyle = 'rgba(10, 15, 20, 0.8)'; ctx.strokeStyle = '#00aaff'; ctx.lineWidth = 2;
                 ctx.fillRect(this.pos.x, this.pos.y, this.w, this.h);
                 ctx.strokeRect(this.pos.x, this.pos.y, this.w, this.h);
                 ctx.beginPath(); ctx.moveTo(this.pos.x, this.pos.y); ctx.lineTo(this.pos.x + 10, this.pos.y + 10); ctx.stroke();
@@ -480,12 +415,10 @@ let currentDifficulty = { mult: 1.0, beskar: 2 };
         class Player extends Entity {
             constructor() {
                 super(0, 0, 18);
-                let ranks_ = [{k:0,h:0},{k:20,h:10},{k:60,h:20},{k:150,h:30},{k:300,h:40},{k:600,h:60}];
-                let rb = 0; for(let r of ranks_) { if(save.totalKills >= r.k) rb = r.h; }
-                this.maxHp = 80 + (save.lvl_hp * UPGRADES.hp.valPerLvl) + rb;
-                this.hp = this.maxHp; this.overshield = (save.lvl_shield||0) > 0 ? 30 : 0;
+                this.maxHp = 80 + (save.lvl_hp * UPGRADES.hp.valPerLvl);
+                this.hp = this.maxHp; this.overshield = 0;
 
-                this.maxSpeed = 320 * (1 + ((save.lvl_speed||1)-1)*0.05); this.accel = 3000; this.friction = 0.8;
+                this.maxSpeed = 320; this.accel = 3000; this.friction = 0.8;
                 this.recoil = new Vector2(); this.angle = 0;
 
                 this.dashes = 3; this.dashRecharge = 0;
@@ -588,34 +521,6 @@ let currentDifficulty = { mult: 1.0, beskar: 2 };
 
                 if (this.forceCooldown > 0) this.forceCooldown -= dt;
                 if (this.forceShield > 0) this.forceShield -= dt;
-                if (!this.forcePushCd) this.forcePushCd = 0;
-                if (this.forcePushCd > 0) this.forcePushCd -= dt;
-                // Grogu passive heal when below 30%
-                if (this.hp > 0 && this.hp < this.maxHp * 0.30) {
-                    this.groguHealTick = (this.groguHealTick||0) + dt;
-                    if (this.groguHealTick >= 1.0) { 
-                        this.hp = Math.min(this.maxHp, this.hp+3); 
-                        this.groguHealTick=0; 
-                        engine.scene.spawnParticles(this.pos,'#00ffaa',4,1);
-                        this.drawHealRing = true;
-                        setTimeout(() => this.drawHealRing = false, 150);
-                    }
-                }
-                // Grogu Force Push [G]
-                if (input.isPressed('g') && this.forcePushCd <= 0) {
-                    this.forcePushCd = 25.0;
-                    engine.camera.shake(20, 0.5);
-                    audio.groguForce && audio.groguForce() || audio.dash();
-                    engine.scene.texts.push(new FloatingText(this.pos.x, this.pos.y-40, 'FORCE PUSH!', '#00ffaa'));
-                    engine.scene.spawnParticles(this.pos,'#00ffaa',40,2);
-                    for (let e of engine.scene.enemies) {
-                        if (e.pos.dist(this.pos) < 400) {
-                            let pushDir = e.pos.sub(this.pos).normalize();
-                            e.vel = pushDir.mult(1200);
-                            e.hp -= 20;
-                        }
-                    }
-                }
             }
 
             takeDamage(amt) {
@@ -626,7 +531,7 @@ let currentDifficulty = { mult: 1.0, beskar: 2 };
                     if (this.overshield < 0) this.overshield = 0;
                     if (over > 0) this.hp -= over;
                 } else { this.hp -= amt; }
-
+                
                 if (this.hp < wasDamaged) {
                     let canvas = document.getElementById('gameCanvas');
                     if (canvas) {
@@ -646,10 +551,6 @@ let currentDifficulty = { mult: 1.0, beskar: 2 };
                 if (this.isDashing) { ctx.beginPath(); ctx.arc(0, 0, this.radius + 12, 0, Math.PI * 2); ctx.strokeStyle = 'rgba(0, 170, 255, 0.6)'; ctx.lineWidth = 4; ctx.stroke(); }
                 ctx.restore();
 
-                if (this.drawHealRing) {
-                    ctx.beginPath(); ctx.arc(this.pos.x, this.pos.y, this.radius + 15, 0, Math.PI * 2);
-                    ctx.strokeStyle = 'rgba(0, 255, 170, 0.6)'; ctx.lineWidth = 3; ctx.stroke();
-                }
                 if (this.forceShield > 0) {
                     ctx.beginPath(); ctx.arc(this.pos.x, this.pos.y, this.radius + 20, 0, Math.PI * 2);
                     ctx.strokeStyle = `rgba(0, 255, 170, ${Math.min(1.0, this.forceShield)})`; ctx.lineWidth = 4; ctx.stroke();
@@ -678,28 +579,17 @@ let currentDifficulty = { mult: 1.0, beskar: 2 };
 
         class Enemy extends Entity {
             constructor(x, y, type, waveMult) {
-                let r2 = type=='bounty'?22:type=='darktrooper'?22:type=='death'?20:type=='scout'?16:type=='shield'?20:type=='probe'?14:18;
-                super(x, y, r2); this.type = type;
-                this.hp = (type=='bounty'?200:type=='darktrooper'?160:type=='death'?120:type=='shield'?80:type=='probe'?40:type=='scout'?80:50) * waveMult * currentDifficulty.mult;
+                super(x, y, type == 'bounty' ? 22 : type == 'darktrooper' ? 22 : type == 'scout' ? 16 : 18); this.type = type;
+                // HP tuned so scouts survive 3-4 hits, darktroopers 5-6 hits at base blaster damage (20 * 2 = 40)
+                this.hp = (type == 'bounty' ? 200 : type == 'darktrooper' ? 160 : type == 'scout' ? 80 : 50) * waveMult * currentDifficulty.mult;
                 this.maxHp = this.hp;
-                this.speed = (type=='bounty'?200:type=='darktrooper'?190:type=='death'?200:type=='shield'?100:type=='probe'?80:type=='scout'?300:145) * (currentDifficulty.mult>1?1.1:1.0);
-                this.color = type=='bounty'?'#ffaa00':type=='darktrooper'?'#ff3333':type=='death'?'#aa00ff':type=='shield'?'#0088ff':type=='probe'?'#aaaaaa':type=='scout'?'#00ffff':'#fff';
-                this.personalShield = (type === 'death') ? 2 : 0;
-                this.alarmTimer = (type === 'probe') ? 5.0 : 0;
+                this.speed = (type == 'bounty' ? 200 : type == 'darktrooper' ? 190 : type == 'scout' ? 300 : 145) * (currentDifficulty.mult > 1 ? 1.1 : 1.0);
+                this.color = type == 'bounty' ? '#ffaa00' : type == 'darktrooper' ? '#ff3333' : type == 'scout' ? '#00ffff' : '#fff';
                 this.sniperTimer = 0; this.aimAngle = 0; this.strafeDir = Math.random() > 0.5 ? 1 : -1;
                 this.meleeTimer = 0; this.strafePhaseTick = 0;
             }
             update(dt, playerPos, allEnemies, walls) {
                 let d = this.pos.dist(playerPos); let dir = playerPos.sub(this.pos).normalize();
-                if (this.type === 'probe') {
-                    this.alarmTimer -= dt;
-                    if (this.alarmTimer <= 0) {
-                        this.texts && this.texts.push;
-                        engine.scene.texts.push(new FloatingText(this.pos.x, this.pos.y, 'REINFORCEMENTS!', '#ff3333'));
-                        for(let i=0;i<3;i++) engine.scene.enemies.push(new Enemy(this.pos.x+(Math.random()-0.5)*200, this.pos.y+(Math.random()-0.5)*200, 'stormtrooper', 1));
-                        this.hp = 0;
-                    }
-                }
 
                 // ---- Line of Sight via Ray Marching ----
                 let canSee = true;
@@ -836,19 +726,6 @@ let currentDifficulty = { mult: 1.0, beskar: 2 };
                 } else if (this.type === 'bounty') {
                     ctx.fillStyle = '#ffaa00'; ctx.beginPath(); ctx.arc(0, 0, this.radius, 0, Math.PI * 2); ctx.fill();
                     ctx.fillStyle = '#000'; ctx.fillRect(-4, -12, 8, 20); ctx.fillRect(-12, -4, 24, 6);
-                } else if (this.type === 'death') {
-                    ctx.fillStyle = '#111'; ctx.beginPath(); ctx.arc(0, -2, this.radius-2, 0, Math.PI*2); ctx.fill();
-                    ctx.shadowColor='#00ff00'; ctx.shadowBlur=8; ctx.fillStyle='#00ff00';
-                    ctx.fillRect(-8,-6,6,3); ctx.fillRect(2,-6,6,3); ctx.shadowBlur=0;
-                    if (this.personalShield > 0) { ctx.strokeStyle='rgba(170,0,255,0.7)'; ctx.lineWidth=3; ctx.beginPath(); ctx.arc(0,0,this.radius+5,0,Math.PI*2); ctx.stroke(); }
-                } else if (this.type === 'shield') {
-                    ctx.fillStyle = '#1144aa'; ctx.beginPath(); ctx.arc(0,0,this.radius,0,Math.PI*2); ctx.fill();
-                    ctx.strokeStyle='rgba(0,136,255,0.9)'; ctx.lineWidth=5;
-                    ctx.beginPath(); ctx.arc(0,0,this.radius+4,-Math.PI/2,Math.PI/2); ctx.stroke();
-                } else if (this.type === 'probe') {
-                    ctx.fillStyle='#888'; ctx.beginPath(); ctx.arc(0,0,this.radius,0,Math.PI*2); ctx.fill();
-                    ctx.shadowColor='#ff3333'; ctx.shadowBlur=8+(5-this.alarmTimer)*3; ctx.fillStyle='#ff3333';
-                    ctx.beginPath(); ctx.arc(0,0,4,0,Math.PI*2); ctx.fill(); ctx.shadowBlur=0;
                 }
                 ctx.restore();
 
@@ -864,27 +741,16 @@ let currentDifficulty = { mult: 1.0, beskar: 2 };
             update(dt, playerPos, walls) {
                 let dir = playerPos.sub(this.pos).normalize();
                 this.aimAngle = Math.atan2(playerPos.y - this.pos.y, playerPos.x - this.pos.x);
-                // vel set dynamically above
+                if (!this.dashing) this.vel = dir.mult(80);
 
-                // Rage phase at 50% HP
-                if (!this.rageActive && this.hp < this.maxHp * 0.5) {
-                    this.rageActive = true;
-                    engine.camera.shake(30, 1.0);
-                    engine.scene.texts.push(new FloatingText(this.pos.x, this.pos.y-60, 'RAGE PHASE ENGAGED', '#ff0000'));
-                    engine.scene.queueStory("MOFF GIDEON", "You cannot escape my wrath, Mandalorian! Long live the Empire!");
-                    audio.overheat && audio.overheat();
-                }
-                let bossSpeed = this.rageActive ? 140 : 80;
-                if (!this.dashing) this.vel = dir.mult(bossSpeed);
                 this.phaseTimer += dt;
-                if (this.phaseTimer > (this.rageActive ? 2.5 : 4.0)) {
+                if (this.phaseTimer > 4.0) {
                     if (Math.random() > 0.5) {
                         this.dashing = true; this.vel = dir.mult(1500); audio.dash(); audio.bossShoot();
                         engine.camera.shake(10, 0.4); this.phaseTimer = -0.5;
                     } else {
                         engine.scene.enemyStrikes.push({ pos: new Vector2(playerPos.x, playerPos.y), timer: 1.5 });
                         audio.orbitalCall();
-                        if (Math.random() < 0.5) engine.scene.queueStory("MOFF GIDEON", "Burn in the orbital strike, Mando!");
                         this.phaseTimer = -1.0;
                     }
                 }
@@ -912,57 +778,6 @@ let currentDifficulty = { mult: 1.0, beskar: 2 };
             }
         }
 
-        function triggerDetonatorExplosion(pos, engineRef) {
-            engineRef.camera.shake(20, 0.4);
-            audio.overheat && audio.overheat() || audio.shoot();
-            // Project particles
-            for(let i=0; i<30; i++) {
-                let ang = Math.random()*Math.PI*2;
-                let vel = new Vector2(Math.cos(ang), Math.sin(ang)).mult(MathUtils.randomRange(100, 500));
-                let p = new Particle(pos.x, pos.y, '#ffaa00', 0, MathUtils.randomRange(2, 5));
-                p.vel = vel; p.life = 0.6; p.maxLife = 0.6;
-                engineRef.particles.push(p);
-            }
-            engineRef.texts.push(new FloatingText(pos.x, pos.y, 'DETONATION!', '#ff5500'));
-            
-            // Damage enemies in splash radius
-            for(let e of engineRef.enemies) {
-                let d = e.pos.dist(pos);
-                if(d < 180) {
-                    let splashDmg = Math.floor(100 * (1 - d/220));
-                    if(splashDmg > 0) {
-                        e.hp -= splashDmg;
-                        engineRef.texts.push(new FloatingText(e.pos.x, e.pos.y, splashDmg, '#ffaa00'));
-                    }
-                }
-            }
-            
-            // Deal damage to destructible walls
-            for(let w of engineRef.walls) {
-                if(w.destructible) {
-                    let wCenterX = w.pos.x + w.w/2;
-                    let wCenterY = w.pos.y + w.h/2;
-                    let dist = new Vector2(wCenterX, wCenterY).dist(pos);
-                    if(dist < 200) {
-                        w.hp -= 60;
-                        if(w.hp <= 0) {
-                            w.dead = true;
-                            // Secret Cache Dopamine Spike! Spawn huge loot inside the destroyed wall
-                            engineRef.texts.push(new FloatingText(wCenterX, wCenterY, 'CACHE REVEALED!', '#ffaa00'));
-                            for(let i=0; i<4; i++) {
-                                engineRef.loot.push(new BeskarIngot(wCenterX + (Math.random()-0.5)*40, wCenterY + (Math.random()-0.5)*40, Math.floor(MathUtils.randomRange(8, 20))));
-                            }
-                            if(Math.random() < 0.6) {
-                                engineRef.loot.push(new WeaponDrop(wCenterX, wCenterY, ['heavy','sniper','thermal','vibroblade'][Math.floor(Math.random()*4)]));
-                            }
-                        }
-                    }
-                }
-            }
-            // Filter dead walls
-            engineRef.walls = engineRef.walls.filter(w => !w.dead);
-        }
-        
         class Projectile extends Entity {
             constructor(x, y, dir, speed, color = '#ff0000', isPlayer = true, r = 4, pierce = false) {
                 super(x, y, r); this.vel = dir.mult(speed); this.life = 1.5;
@@ -981,10 +796,7 @@ let currentDifficulty = { mult: 1.0, beskar: 2 };
                                 let oY = Math.min(Math.abs(this.pos.y - w.pos.y), Math.abs(this.pos.y - (w.pos.y + w.h)));
                                 if (oX < oY) this.vel.x *= -1; else this.vel.y *= -1;
                                 this.angle = Math.atan2(this.vel.y, this.vel.x);
-                            } else { 
-                                this.dead = true; 
-                                if(this.isDetonator) triggerDetonatorExplosion(this.pos, engine.scene);
-                            }
+                            } else { this.dead = true; }
                             break;
                         }
                     }
@@ -1018,33 +830,10 @@ let currentDifficulty = { mult: 1.0, beskar: 2 };
                 if (this.life < 3 && Math.floor(Date.now() / 150) % 2 === 0) return; // blink when expiring
                 let f = Math.sin(Date.now() * 0.01) * 5;
                 ctx.save(); ctx.translate(this.pos.x, this.pos.y + f);
-                ctx.fillStyle = this.wtype === 'sniper' ? '#00aaff' : this.wtype === 'heavy' ? '#ffaa00' : this.wtype === 'vibroblade' ? '#ffffff' : '#00ffaa';
+                ctx.fillStyle = this.wtype === 'sniper' ? '#00aaff' : this.wtype === 'heavy' ? '#ffaa00' : '#00ffaa';
                 ctx.shadowColor = ctx.fillStyle; ctx.shadowBlur = 20;
-                // Legendary Loot Beam (Diablo/Destiny style)
-                ctx.globalAlpha = 0.3 + Math.sin(Date.now()*0.005)*0.2;
-                ctx.beginPath(); ctx.moveTo(-5, 0); ctx.lineTo(5, 0); ctx.lineTo(15, -1000); ctx.lineTo(-15, -1000); ctx.fill();
-                ctx.globalAlpha = 1.0;
-                
                 ctx.fillRect(-15, -10, 30, 20);
                 ctx.fillStyle = '#fff'; ctx.font = '12px Oswald'; ctx.textAlign = 'center'; ctx.fillText('GUN', 0, 5);
-                ctx.restore();
-            }
-        }
-
-        class ImperialVaultSafe extends Entity {
-            constructor(x, y) { super(x, y, 24); this.life = 999.0; }
-            update(dt) {}
-            draw(ctx) {
-                let f = Math.sin(Date.now() * 0.008) * 3;
-                ctx.save(); ctx.translate(this.pos.x, this.pos.y + f);
-                ctx.fillStyle = '#ff9900'; ctx.shadowColor = '#ff9900'; ctx.shadowBlur = 25;
-                ctx.fillRect(-22, -22, 44, 44); ctx.strokeStyle = '#fff'; ctx.lineWidth = 2; ctx.strokeRect(-22, -22, 44, 44);
-                // Vault safe lock wheel
-                ctx.beginPath(); ctx.arc(0, 0, 10, 0, Math.PI * 2); ctx.stroke();
-                // Radial lines for wheel spokes
-                for(let a=0; a<Math.PI*2; a+=Math.PI/3) {
-                    ctx.beginPath(); ctx.moveTo(0,0); ctx.lineTo(Math.cos(a)*10, Math.sin(a)*10); ctx.stroke();
-                }
                 ctx.restore();
             }
         }
@@ -1087,19 +876,6 @@ let currentDifficulty = { mult: 1.0, beskar: 2 };
         // ==========================================
         // SCENE: EXTRACT
         // ==========================================
-        function addKillFeed(text, color='#aaa') {
-            let feed = document.getElementById('kill-feed');
-            if(!feed) return;
-            let entry = document.createElement('div');
-            entry.style.background = 'rgba(0,0,0,0.6)';
-            entry.style.padding = '4px 8px';
-            entry.style.borderLeft = '3px solid ' + color;
-            entry.style.animation = 'fadeIn 0.2s';
-            entry.innerHTML = text;
-            feed.appendChild(entry);
-            setTimeout(() => { entry.style.opacity = '0'; setTimeout(() => entry.remove(), 300); }, 3000);
-        }
-        
         class ExtractionMode {
             constructor() {
                 this.player = new Player(); this.grogu = new Grogu(this.player);
@@ -1111,19 +887,7 @@ let currentDifficulty = { mult: 1.0, beskar: 2 };
                     let wx = MathUtils.randomRange(-2500, 2500); let wy = MathUtils.randomRange(-2500, 2500);
                     if (Math.abs(wx) < 500 && Math.abs(wy) < 500) continue;
                     let isVert = Math.random() > 0.5;
-                    let dest = Math.random() < 0.25;
-                    this.walls.push(new Wall(wx, wy, isVert ? MathUtils.randomRange(40, 100) : MathUtils.randomRange(200, 600), isVert ? MathUtils.randomRange(200, 600) : MathUtils.randomRange(40, 100), dest));
-                }
-
-                // Imperial Vault (Secret Room) - enclosed by destructible walls containing gold safe vault!
-                let vx = MathUtils.randomRange(-1500, 1500);
-                let vy = MathUtils.randomRange(-1500, 1500);
-                if (Math.abs(vx) > 600 || Math.abs(vy) > 600) {
-                    this.walls.push(new Wall(vx, vy, 240, 30, true)); // Top dest wall
-                    this.walls.push(new Wall(vx, vy + 210, 240, 30, true)); // Bottom dest wall
-                    this.walls.push(new Wall(vx, vy, 30, 240, true)); // Left dest wall
-                    this.walls.push(new Wall(vx + 210, vy, 30, 240, true)); // Right dest wall
-                    this.loot.push(new ImperialVaultSafe(vx + 120, vy + 120));
+                    this.walls.push(new Wall(wx, wy, isVert ? MathUtils.randomRange(40, 100) : MathUtils.randomRange(200, 600), isVert ? MathUtils.randomRange(200, 600) : MathUtils.randomRange(40, 100)));
                 }
 
                 // ARENA BOUNDARIES
@@ -1146,7 +910,6 @@ let currentDifficulty = { mult: 1.0, beskar: 2 };
                 this.state = 'playing'; this.timeScale = 1.0;
 
                 this.storyQueue = []; this.storyActive = false;
-                save.totalRuns = (save.totalRuns||0) + 1;
 
                 // Randomised mission briefing each run
                 const briefings = [
@@ -1355,14 +1118,6 @@ let currentDifficulty = { mult: 1.0, beskar: 2 };
 
                 // Kill Streak decay
                 if (this.streakTimer > 0) { this.streakTimer -= dt; if (this.streakTimer <= 0) this.killStreak = 0; }
-                let comboFill = document.getElementById('combo-bar-fill');
-                if (comboFill) {
-                    if (this.comboTimer > 0) {
-                        comboFill.style.width = `${(this.comboTimer / 4.0) * 100}%`;
-                    } else {
-                        comboFill.style.width = '0%';
-                    }
-                }
 
                 // Wanted Level (displayed as floating text milestone)
                 let wantedLevel = Math.min(5, Math.floor(save.totalKills / 20));
@@ -1382,13 +1137,6 @@ let currentDifficulty = { mult: 1.0, beskar: 2 };
                 let mouseWorld = new Vector2(mx, my);
 
                 this.player.angle = Math.atan2(mouseWorld.y - this.player.pos.y, mouseWorld.x - this.player.pos.x);
-                // Bullet time save-the-player moment
-                if (!this.bulletTimeUsed && this.player.hp > 0 && this.player.hp < this.player.maxHp * 0.15) {
-                    this.bulletTimeUsed = true; this.timeScale = 0.3;
-                    setTimeout(()=>{ if(this.timeScale === 0.3) this.timeScale = 1.0; this.bulletTimeUsed = false; }, 600);
-                    engine.camera.shake(8, 0.3);
-                    this.texts.push(new FloatingText(this.player.pos.x, this.player.pos.y-40, 'CRITICAL WARNING', '#ff3333'));
-                }
                 this.player.update(dt, this.walls);
                 this.grogu.update(dt);
 
@@ -1414,7 +1162,7 @@ let currentDifficulty = { mult: 1.0, beskar: 2 };
                         },
                         () => {
                             // Arms Cache - random weapon drop
-                            let wtypes = ['heavy', 'sniper', 'thermal', 'vibroblade'];
+                            let wtypes = ['heavy', 'sniper', 'thermal'];
                             let wt = wtypes[Math.floor(Math.random() * wtypes.length)];
                             let ex = this.player.pos.x + MathUtils.randomRange(-200, 200);
                             let ey = this.player.pos.y + MathUtils.randomRange(-200, 200);
@@ -1451,7 +1199,7 @@ let currentDifficulty = { mult: 1.0, beskar: 2 };
                 }
 
                 let wType = this.player.getActiveWeapon();
-                let fireRate = wType === 'heavy' ? 70 : wType === 'sniper' ? 600 : wType === 'vibroblade' ? 400 : wType === 'thermal' ? 1000 : wType === 'dart' ? 80 : wType === 'flamer' ? 50 : 140;
+                let fireRate = wType === 'heavy' ? 70 : wType === 'sniper' ? 600 : wType === 'thermal' ? 1000 : wType === 'dart' ? 80 : wType === 'flamer' ? 50 : 140;
                 if (this.perks.includes('OVERCLOCK')) fireRate *= 0.75;
 
                 if ((input.isMouseDown || input.justClicked) && Date.now() - this.lastShot > fireRate && !this.player.isDashing && !this.player.overheated) {
@@ -1462,10 +1210,10 @@ let currentDifficulty = { mult: 1.0, beskar: 2 };
                     if (wType === 'blaster') {
                         if (this.perks.includes('DOUBLE')) {
                             let t = new Vector2(-dir.y, dir.x).mult(8);
-                            this.projectiles.push(new Projectile(this.player.pos.x + dir.x * 20 + t.x, this.player.pos.y + dir.y * 20 + t.y, dir, 2200, save.prestige > 0 ? '#ffaa00' : '#00aaff', true));
-                            this.projectiles.push(new Projectile(this.player.pos.x + dir.x * 20 - t.x, this.player.pos.y + dir.y * 20 - t.y, dir, 2200, save.prestige > 0 ? '#ffaa00' : '#00aaff', true));
+                            this.projectiles.push(new Projectile(this.player.pos.x + dir.x * 20 + t.x, this.player.pos.y + dir.y * 20 + t.y, dir, 2200, '#00aaff', true));
+                            this.projectiles.push(new Projectile(this.player.pos.x + dir.x * 20 - t.x, this.player.pos.y + dir.y * 20 - t.y, dir, 2200, '#00aaff', true));
                         } else {
-                            this.projectiles.push(new Projectile(this.player.pos.x + dir.x * 20, this.player.pos.y + dir.y * 20, dir, 2200, save.prestige > 0 ? '#ffaa00' : '#00aaff', true));
+                            this.projectiles.push(new Projectile(this.player.pos.x + dir.x * 20, this.player.pos.y + dir.y * 20, dir, 2200, '#00aaff', true));
                         }
                         this.player.heat += 8; audio.shoot(); fired = true;
                     } else if (wType === 'dart') {
@@ -1499,9 +1247,7 @@ let currentDifficulty = { mult: 1.0, beskar: 2 };
                         this.projectiles.push(new Projectile(this.player.pos.x, this.player.pos.y, dir, 4000, '#00aaff', true, 8, true));
                         this.player.heat += 20; audio.orbitalStrike(); fired = true;
                     } else if (wType === 'thermal') {
-                        let tp = new Projectile(this.player.pos.x, this.player.pos.y, dir, 600, '#ff5500', true, 10, false);
-                        tp.isDetonator = true;
-                        this.projectiles.push(tp);
+                        this.projectiles.push(new Projectile(this.player.pos.x, this.player.pos.y, dir, 600, '#ff5500', true, 10, false));
                         this.player.heat += 5; audio.shoot(); fired = true;
                     }
 
@@ -1515,9 +1261,9 @@ let currentDifficulty = { mult: 1.0, beskar: 2 };
                                 this.texts.push(new FloatingText(this.player.pos.x, this.player.pos.y - 60, 'OUT OF AMMO', '#ff3333'));
                             }
                         }
-                        let recoilAmt = wType === 'sniper' ? -1200 : wType === 'vibroblade' ? 800 : wType === 'heavy' ? -700 : wType === 'flamer' ? -400 : wType === 'thermal' ? -300 : -500;
+                        let recoilAmt = wType === 'sniper' ? -1200 : wType === 'heavy' ? -700 : wType === 'flamer' ? -400 : wType === 'thermal' ? -300 : -500;
                         this.player.recoil = dir.mult(recoilAmt);
-                        engine.camera.shake(wType === 'sniper' ? 15 : wType === 'vibroblade' ? 12 : wType === 'heavy' ? 8 : wType === 'flamer' ? 6 : 4, 0.1);
+                        engine.camera.shake(wType === 'sniper' ? 15 : wType === 'heavy' ? 8 : wType === 'flamer' ? 6 : 4, 0.1);
                         this.lastShot = Date.now();
                         input.justClicked = false;
                     }
@@ -1560,9 +1306,6 @@ let currentDifficulty = { mult: 1.0, beskar: 2 };
                 }
 
                 this.spawnTimer -= dt;
-                // Dynamic Difficulty: Scaling difficulty based on current combo (Flow State protection)
-                let flowScale = Math.min(2.5, 1.0 + (this.combo - 1) * 0.35);
-                if(save.prestige > 0) flowScale *= (1.0 + save.prestige * 0.2);
                 if (this.spawnTimer <= 0 && !this.boss && (!this.extractionPos || this.extractionTimer > 0)) {
                     let mult = 1 + (this.wave * 0.1);
                     let squads = Math.min(3, 1 + Math.floor(this.wave / 3)); // 1 to 3 squads based on wave
@@ -1593,27 +1336,10 @@ let currentDifficulty = { mult: 1.0, beskar: 2 };
 
                 for (let l of this.loot) {
                     l.update(dt);
-                    let pickupRadius = (l instanceof WeaponDrop ? 50 : (l instanceof ImperialVaultSafe ? 60 : 40));
-                    if ((save.lvl_magnet || 0) > 0) pickupRadius *= 2.0; // Apply Magnetism upgrade
-                    if (l.pos.dist(this.player.pos) < pickupRadius) {
+                    if (l.pos.dist(this.player.pos) < (l instanceof WeaponDrop ? 50 : 40)) {
                         l.dead = true;
                         this.spawnLootPing(l.pos);
-                        if (l instanceof ImperialVaultSafe) {
-                            audio.powerup();
-                            engine.camera.shake(35, 0.8);
-                            this.texts.push(new FloatingText(l.pos.x, l.pos.y - 40, 'IMPERIAL TREASURY CRACKED!', '#ffaa00'));
-                            
-                            // Spawn massive gold loot explosions!
-                            for(let i=0; i<8; i++) {
-                                let rx = l.pos.x + (Math.random()-0.5)*80;
-                                let ry = l.pos.y + (Math.random()-0.5)*80;
-                                this.loot.push(new BeskarIngot(rx, ry, Math.floor(MathUtils.randomRange(15, 30))));
-                            }
-                            
-                            // Spawn 2 weapon drops inside!
-                            this.loot.push(new WeaponDrop(l.pos.x - 30, l.pos.y, ['heavy','sniper','thermal','vibroblade'][Math.floor(Math.random()*4)]));
-                            this.loot.push(new WeaponDrop(l.pos.x + 30, l.pos.y, ['heavy','sniper','thermal','vibroblade'][Math.floor(Math.random()*4)]));
-                        } else if (l instanceof BeskarIngot) {
+                        if (l instanceof BeskarIngot) {
                             audio.beskar();
                             this.beskarCollected += l.amt; this.runXp += l.amt;
                             this.texts.push(new FloatingText(l.pos.x, l.pos.y - 20, `+${l.amt} BESKAR`, '#a9b8c2'));
@@ -1642,15 +1368,7 @@ let currentDifficulty = { mult: 1.0, beskar: 2 };
                             // Use active weapon for damage — fixes stale this.player.weapon bug
                             let aw = this.player.getActiveWeapon();
                             let dmg = (aw === 'sniper' ? 90 : aw === 'heavy' ? 18 : aw === 'dart' ? 12 : aw === 'flamer' ? 10 : 20) * this.player.dmgMultiplier;
-                            if (p.isStunSphere) {
-                                e.vel = new Vector2(0,0);
-                                e.hp -= 8;
-                                this.texts.push(new FloatingText(e.pos.x, e.pos.y, 'STUNNED', '#00ff88'));
-                                audio.playTone('sine', 100, 50, 0.15, 0.08);
-                            } else {
-                                e.hp -= dmg;
-                            }
-                            audio.hit(); this.spawnParticles(p.pos, p.color, 8);
+                            e.hp -= dmg; audio.hit(); this.spawnParticles(p.pos, p.color, 8);
                             this.texts.push(new FloatingText(e.pos.x, e.pos.y, Math.floor(dmg), '#fff'));
 
                             // PRECISION KILL bonus — reward long-range kills
@@ -1672,45 +1390,18 @@ let currentDifficulty = { mult: 1.0, beskar: 2 };
                             }
                         }
                     }
-                    // Critical hit check (15% chance on killing blow = extra bonus)
-                    let isCrit = Math.random() < 0.15;
-                    if (isCrit && e.hp <= 0 && e.hp > -1000) {
-                        this.texts.push(new FloatingText(e.pos.x, e.pos.y-30, 'CRIT!', '#ffaa00'));
-                        // Extreme Crit Particles
-                        for(let k=0; k<15; k++) {
-                            let pa = Math.random()*Math.PI*2;
-                            let pvel = new Vector2(Math.cos(pa), Math.sin(pa)).mult(MathUtils.randomRange(200, 600));
-                            let pt = new Particle(e.pos.x, e.pos.y, '#ffaa00', 0, MathUtils.randomRange(2, 6));
-                            pt.vel = pvel; pt.life = 0.8; pt.maxLife = 0.8;
-                            this.particles.push(pt);
-                        }
-                        this.spawnParticles(e.pos, '#ffaa00', 8, 2);
-                        audio.playTone('triangle',1047,1319,0.15,0.1);
-                    }
                     if (e.hp <= 0) {
                         e.dead = true; this.waveKills++;
                         this.spawnParticles(e.pos, e.color, settings.particles === 'high' ? 25 : 10); audio.kill();
                         save.totalKills = (save.totalKills || 0) + 1;
-                        let weaponNames = { blaster: 'AMBAN PISTOL', heavy: 'HEAVY REPEATER', sniper: 'AMBAN SNIPER', thermal: 'DETONATOR', flamer: 'WRIST FLAMER', dart: 'DART PISTOL', vibroblade: 'VIBRO-BLADE' };
-                        let weaponUsed = weaponNames[this.player.getActiveWeapon()] || 'BLASTER';
-                        let enemyNames = { stormtrooper: 'STORM TROOPER', scout: 'SCOUT TROOPER', darktrooper: 'DARK TROOPER', shield: 'SHIELD TROOPER', death: 'DEATH TROOPER', probe: 'PROBE DROID', bounty: 'BOUNTY TARGET' };
-                        let enemyKilled = enemyNames[e.type] || 'TROOPER';
-                        if(e.type !== 'stormtrooper' || Math.random() < 0.15) {
-                            addKillFeed(`<span style="color:#00ffaa">MANDO</span> <span style="color:#666">[ ${weaponUsed} ]</span> <span style="color:${e.color}">${enemyKilled}</span>`, e.color);
-                        }
                         this.combo = Math.min(5.0, this.combo + 0.1); this.comboTimer = 4.0;
-                        let comboScale = 1.0 + (this.combo - 1.0) * 0.20;
-                        audio.playTone('triangle', 320 * comboScale, 640 * comboScale, 0.12, 0.07);
-                        let fill = document.getElementById('combo-bar-fill');
-                        if (fill) fill.style.width = '100%';
 
                         // Kill Streak bonus
                         this.killStreak = (this.killStreak || 0) + 1;
                         this.streakTimer = 3.5;
-                        if (this.killStreak === 5) { this.texts.push(new FloatingText(e.pos.x, e.pos.y - 60, '★ BLASTER MASTER!', '#ffaa00')); audio.powerup(); }
-                        if (this.killStreak === 10) { this.texts.push(new FloatingText(e.pos.x, e.pos.y - 60, '★★ APEX PREDATOR!', '#ff5500')); audio.powerup(); }
-                        if (this.killStreak === 15) { this.texts.push(new FloatingText(e.pos.x, e.pos.y - 60, '★★★ MANDO IS UNSTOPPABLE!', '#ff0055')); audio.powerup(); }
-                        if (this.killStreak === 20) { this.texts.push(new FloatingText(e.pos.x, e.pos.y - 60, '★★★★ LEGEND OF MANDALORE', '#00ffaa')); audio.powerup(); }
+                        if (this.killStreak === 5) this.texts.push(new FloatingText(e.pos.x, e.pos.y - 60, '★ KILLING SPREE!', '#ffaa00'));
+                        if (this.killStreak === 10) this.texts.push(new FloatingText(e.pos.x, e.pos.y - 60, '★★ RAMPAGE!', '#ff5500'));
+                        if (this.killStreak === 20) this.texts.push(new FloatingText(e.pos.x, e.pos.y - 60, '★★★ THIS IS THE WAY', '#00ffaa'));
                         // Signet of Mandalore: 5x combo kill bonus
                         if (this.combo >= 5.0) {
                             let bonus = Math.floor(3 * currentDifficulty.beskar);
@@ -1729,7 +1420,7 @@ let currentDifficulty = { mult: 1.0, beskar: 2 };
 
                         // Weapon Drops
                         if (Math.random() < (e.type == 'bounty' ? 0.8 : e.type == 'darktrooper' ? 0.08 : 0.01)) {
-                            let wtypes = ['heavy', 'sniper', 'thermal', 'vibroblade'];
+                            let wtypes = ['heavy', 'sniper', 'thermal'];
                             let wt = wtypes[Math.floor(Math.random() * wtypes.length)];
                             this.loot.push(new WeaponDrop(e.pos.x + 20, e.pos.y, wt));
                         }
@@ -1745,13 +1436,6 @@ let currentDifficulty = { mult: 1.0, beskar: 2 };
                             audio.heal();
                         }
                         if (e.type == 'bounty') this.bountySpawned = false;
-                        // Death Trooper guaranteed weapon drop
-                        if (e.type === 'death') { let wt=['heavy','sniper','thermal'][Math.floor(Math.random()*3)]; this.loot.push(new WeaponDrop(e.pos.x,e.pos.y,wt)); }
-                        // Rank up check
-                        let RANKS_=[{n:'FOUNDLING',k:0},{n:'WARRIOR',k:20},{n:'HUNTER',k:60},{n:'BOUNTY HUNTER',k:150},{n:'GUILD MASTER',k:300},{n:'LEGEND OF MANDALORE',k:600}];
-                        let oldR=RANKS_.filter(r=>save.totalKills-1>=r.k).pop();
-                        let newR=RANKS_.filter(r=>save.totalKills>=r.k).pop();
-                        if (newR && oldR && newR.n !== oldR.n) { audio.powerup(); this.texts.push(new FloatingText(this.player.pos.x, this.player.pos.y-60, 'RANK: '+newR.n, '#ffaa00')); }
                     }
                     // Contact damage - melee units stay alive and use their timer; ranged units destroy on ramming
                     let isColliding = e.pos.dist(this.player.pos) < e.radius + this.player.radius;
@@ -1881,7 +1565,7 @@ let currentDifficulty = { mult: 1.0, beskar: 2 };
                         }
                         if (this.extractionTimer > 0) {
                             this.extractionTimer -= dt;
-                            this.spawnTimer -= dt * 6;
+                            this.spawnTimer -= dt * 6; // Absolute Insane spawn rate!
                         }
 
                         if (this.extractionTimer <= 0 && this.extractionTimer !== -1 && this.state === 'playing') {
@@ -1892,9 +1576,7 @@ let currentDifficulty = { mult: 1.0, beskar: 2 };
                             saveGame();
                             document.getElementById('end-title').innerText = newRecord ? "NEW RECORD! BOUNTY SECURED" : "BOUNTY SECURED";
                             document.getElementById('end-title').style.color = newRecord ? "#00ffaa" : "#00aaff";
-                            let salvaged = Math.floor(this.beskarCollected * 0.25);
-                    let recap = `<div style="font-family:'Share Tech Mono';font-size:13px;color:#888;margin-top:8px;line-height:2;">
-                    <span style="color:#ff3333; font-weight:bold;">LOSS AVERTED: 25% BESKAR SALVAGED (+${salvaged} BSK)</span><br>`;
+                            let recap = `<div style="font-family:'Share Tech Mono';font-size:13px;color:#888;margin-top:8px;line-height:2;">`;
                             recap += `WAVE SURVIVED: <span style="color:#00aaff">${this.wave}</span><br>`;
                             recap += `TOTAL BESKAR: <span style="color:#a9b8c2">${this.beskarCollected}</span><br>`;
                             recap += `KILLS: <span style="color:#ff3333">${save.totalKills || 0}</span><br>`;
@@ -1902,14 +1584,6 @@ let currentDifficulty = { mult: 1.0, beskar: 2 };
                             recap += `</div>`;
                             document.getElementById('end-beskar').innerHTML = recap;
                             document.getElementById('end-screen').style.display = 'flex';
-                            if(this.wave >= 5) {
-                                document.getElementById('prestige-recap').innerText = "CREED ASCENSION ELIGIBLE! Go to New Game+ for permanent Golden Blasters and 1.5x Beskar multi.";
-                                document.getElementById('prestige-recap').style.display = 'block';
-                                document.getElementById('btn-prestige').style.display = 'block';
-                            } else {
-                                document.getElementById('prestige-recap').style.display = 'none';
-                                document.getElementById('btn-prestige').style.display = 'none';
-                            }
                         }
                     } else if (this.extractionTimer > 0) {
                         if (Math.random() < 0.05) this.texts.push(new FloatingText(this.player.pos.x, this.player.pos.y - 50, "RETURN TO LZ!", "#ff3333"));
@@ -1922,7 +1596,6 @@ let currentDifficulty = { mult: 1.0, beskar: 2 };
                     let salvaged = Math.floor(this.beskarCollected * 0.25);
                     save.beskar += salvaged;
                     if (this.wave > (save.bestWave || 0)) save.bestWave = this.wave;
-                    if (this.combo > (save.bestCombo||1)) save.bestCombo = this.combo;
                     saveGame(); // Always save stats on death
 
                     document.getElementById('end-title').innerText = "K.I.A.";
@@ -1946,11 +1619,11 @@ let currentDifficulty = { mult: 1.0, beskar: 2 };
             openExtraction() {
                 // Find a spawn position inside the bounds
                 let pos = new Vector2(this.player.pos.x, this.player.pos.y - 1200);
-
+                
                 // Let's refine the position to be within play area and not inside any walls
                 let attempts = 0;
                 let found = false;
-
+                
                 while (!found && attempts < 100) {
                     if (attempts > 0) {
                         // If standard direction failed, try a random direction and distance
@@ -1961,11 +1634,11 @@ let currentDifficulty = { mult: 1.0, beskar: 2 };
                             this.player.pos.y + Math.sin(angle) * dist
                         );
                     }
-
+                    
                     // Clamp to playable bounds (playable area is x, y between -2500 and 2500)
                     pos.x = Math.max(-2350, Math.min(2350, pos.x));
                     pos.y = Math.max(-2350, Math.min(2350, pos.y));
-
+                    
                     // Check if it overlaps with any walls (with some padding, e.g., 150px extraction radius + 20px)
                     let overlap = false;
                     for (let w of this.walls) {
@@ -1983,7 +1656,7 @@ let currentDifficulty = { mult: 1.0, beskar: 2 };
                     }
                     attempts++;
                 }
-
+                
                 this.extractionPos = pos;
                 audio.alarm();
             }
@@ -2092,7 +1765,7 @@ let currentDifficulty = { mult: 1.0, beskar: 2 };
 
                 let recoilSpread = (this.player.heat / 100) * 15;
                 ctx.strokeStyle = crossColor; ctx.lineWidth = 2;
-
+                
                 ctx.beginPath(); ctx.arc(0, 0, 8 + recoilSpread, 0, Math.PI * 2); ctx.stroke();
                 ctx.beginPath();
                 ctx.moveTo(-16 - recoilSpread, 0); ctx.lineTo(-6 - recoilSpread, 0);

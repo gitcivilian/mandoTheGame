@@ -1,621 +1,498 @@
-@import url('https://fonts.googleapis.com/css2?family=Oswald:wght@500;700&family=Rajdhani:wght@500;700&family=Share+Tech+Mono&display=swap');
-
-        body {
-            margin: 0;
-            padding: 0;
-            background-color: #010404;
-            color: #fff;
-            font-family: 'Rajdhani', sans-serif;
-            overflow: hidden;
-            cursor: crosshair;
-            user-select: none;
-            touch-action: none;
-        }
-
-        #game-container {
-            position: relative;
-            width: 100vw;
-            height: 100vh;
-        }
-
-        canvas {
-            display: block;
-            filter: contrast(1.15) saturate(1.25);
-        }
-
-        .vignette {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: radial-gradient(circle, transparent 30%, rgba(0, 0, 0, 0.95) 120%);
-            pointer-events: none;
-            z-index: 4;
-        }
-
-        .damage-overlay {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            box-shadow: inset 0 0 0px rgba(255, 0, 0, 0);
-            pointer-events: none;
-            transition: box-shadow 0.1s;
-            z-index: 6;
-        }
-
-        .damage-overlay.active {
-            box-shadow: inset 0 0 200px rgba(255, 0, 0, 0.8);
-        }
-
-        /* Chromatic aberration on damage — disorienting, visceral */
-        canvas.hit {
-            animation: chromatic 0.2s ease-out;
-        }
-
-        @keyframes chromatic {
-            0% {
-                filter: contrast(1.15) saturate(1.25);
-            }
-
-            25% {
-                filter: contrast(2.2) saturate(2) drop-shadow(4px 0 0 rgba(255, 0, 0, 0.9)) drop-shadow(-4px 0 0 rgba(0, 255, 255, 0.9));
-            }
-
-            100% {
-                filter: contrast(1.15) saturate(1.25);
-            }
-        }
-
-        /* Near-death heartbeat — red pulse drives subconscious urgency */
-        .heartbeat {
-            animation: hb 0.75s ease-in-out infinite;
-        }
-
-        @keyframes hb {
-
-            0%,
-            100% {
-                box-shadow: inset 0 0 60px rgba(255, 0, 0, 0.0);
-            }
-
-            50% {
-                box-shadow: inset 0 0 140px rgba(255, 0, 0, 0.6);
-            }
-        }
-
-        /* Wave intro cinematic card — creates anticipation/dread */
-        #wave-intro {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: 50;
-            pointer-events: none;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            opacity: 0;
-            transition: opacity 0.25s;
-        }
-
-        #wave-intro.show {
-            opacity: 1;
-        }
-
-        #wave-intro-bg {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(180deg, rgba(0, 0, 0, 0.9) 0%, rgba(0, 5, 15, 0.97) 50%, rgba(0, 0, 0, 0.9) 100%);
-            clip-path: polygon(0 30%, 100% 25%, 100% 75%, 0 80%);
-        }
-
-        #wave-intro-text {
-            position: relative;
-            font-family: 'Oswald', sans-serif;
-            font-size: 88px;
-            font-weight: 700;
-            color: #fff;
-            letter-spacing: 10px;
-            text-transform: uppercase;
-            text-shadow: 0 0 30px rgba(0, 170, 255, 0.9), 0 0 80px rgba(0, 170, 255, 0.3);
-            transform: scaleX(1.08);
-        }
-
-        #wave-intro-sub {
-            position: relative;
-            font-family: 'Share Tech Mono';
-            font-size: 16px;
-            color: #00aaff;
-            letter-spacing: 6px;
-            margin-top: 12px;
-        }
-
-        #wave-intro-line {
-            position: relative;
-            width: 300px;
-            height: 2px;
-            background: linear-gradient(90deg, transparent, #00aaff, transparent);
-            margin-top: 16px;
-        }
-
-        /* Loot pickup ping — expanding ring triggers dopamine */
-        .loot-ping {
-            position: absolute;
-            border-radius: 50%;
-            border: 2px solid rgba(169, 184, 194, 0.9);
-            pointer-events: none;
-            z-index: 20;
-            animation: lping 0.5s ease-out forwards;
-            transform: translate(-50%, -50%);
-        }
-
-        @keyframes lping {
-            from {
-                width: 10px;
-                height: 10px;
-                opacity: 1;
-            }
-
-            to {
-                width: 80px;
-                height: 80px;
-                opacity: 0;
-            }
-        }
-
-        .hud {
-            position: absolute;
-            pointer-events: none;
-            z-index: 10;
-        }
-
-        #top-ui {
-            top: 12px;
-            left: 50%;
-            transform: translateX(-50%);
-            text-align: center;
-            background: rgba(0, 0, 0, 0.6);
-            border-bottom: 2px solid #00aaff;
-            padding: 8px 20px;
-            clip-path: polygon(0 0, 100% 0, 97% 100%, 3% 100%);
-            backdrop-filter: blur(6px);
-            white-space: nowrap;
-        }
-
-        #wave-text {
-            font-size: 18px;
-            color: #00aaff;
-            letter-spacing: 3px;
-            margin-bottom: 2px;
-            text-transform: uppercase;
-            font-weight: 700;
-            font-family: 'Oswald', sans-serif;
-            display: inline;
-        }
-
-        #wave-sub {
-            font-size: 12px;
-            color: #aaa;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            font-family: 'Share Tech Mono', monospace;
-            display: inline;
-            margin-left: 10px;
-        }
-
-        #wave-bar-bg {
-            width: 100%;
-            height: 4px;
-            background: rgba(0, 0, 0, 0.8);
-            border: 1px solid rgba(0, 170, 255, 0.4);
-            margin: 5px auto 0;
-            position: relative;
-        }
-
-        #wave-bar-fill {
-            width: 0%;
-            height: 100%;
-            background: #00aaff;
-            box-shadow: 0 0 6px #00aaff;
-            transition: width 0.3s;
-        }
-
-        #bottom-left {
-            bottom: 20px;
-            left: 20px;
-            background: rgba(0, 0, 0, 0.65);
-            border-left: 3px solid #00aaff;
-            padding: 12px 16px;
-            min-width: 0;
-            width: auto;
-            box-shadow: 0 0 15px rgba(0, 170, 255, 0.1);
-            backdrop-filter: blur(8px);
-        }
-
-        .stat-row {
-            display: flex;
-            flex-direction: column;
-        }
-
-        .stat-row-hz {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 14px;
-        }
-
-        .hud-value {
-            font-size: 28px;
-            font-weight: 700;
-            color: #fff;
-            line-height: 1;
-            font-family: 'Oswald', sans-serif;
-        }
-
-        .hud-label {
-            font-size: 10px;
-            color: #88ccff;
-            text-transform: uppercase;
-            font-weight: 700;
-            letter-spacing: 1px;
-            margin-bottom: 1px;
-            font-family: 'Share Tech Mono', monospace;
-        }
-
-        #stratagem-ui {
-            bottom: 20px;
-            right: 20px;
-            text-align: right;
-        }
-
-        .stratagem-box {
-            background: rgba(0, 0, 0, 0.65);
-            border-right: 3px solid #ffaa00;
-            padding: 8px 14px;
-            backdrop-filter: blur(8px);
-            display: inline-block;
-            margin-bottom: 6px;
-        }
-
-        .stratagem-title {
-            color: #ffaa00;
-            font-size: 11px;
-            font-weight: 700;
-            letter-spacing: 1px;
-            font-family: 'Share Tech Mono', monospace;
-        }
-
-        .stratagem-status {
-            font-size: 20px;
-            color: #fff;
-            font-weight: 700;
-            font-family: 'Oswald', sans-serif;
-        }
-
-        #story-box {
-            position: absolute;
-            bottom: 40px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 700px;
-            background: rgba(10, 15, 20, 0.95);
-            border: 1px solid #00aaff;
-            border-top: 4px solid #00aaff;
-            padding: 20px 30px;
-            display: none;
-            z-index: 100;
-            box-shadow: 0 0 40px rgba(0, 170, 255, 0.3);
-            clip-path: polygon(3% 0, 97% 0, 100% 100%, 0% 100%);
-            transition: opacity 0.5s;
-        }
-
-        .story-speaker {
-            color: #00aaff;
-            font-weight: 700;
-            font-size: 20px;
-            letter-spacing: 3px;
-            margin-bottom: 8px;
-            text-transform: uppercase;
-            font-family: 'Share Tech Mono', monospace;
-            border-bottom: 1px solid rgba(0, 170, 255, 0.3);
-            padding-bottom: 5px;
-        }
-
-        .story-speaker.enemy {
-            color: #ff3333;
-            border-bottom: 1px solid rgba(255, 50, 50, 0.3);
-        }
-
-        .story-text {
-            color: #fff;
-            font-size: 20px;
-            font-weight: 500;
-            font-style: italic;
-            letter-spacing: 1px;
-            line-height: 1.4;
-        }
-
-        #heat-bar-bg {
-            width: 100px;
-            height: 5px;
-            background: rgba(30, 0, 0, 0.8);
-            border: 1px solid rgba(255, 50, 50, 0.4);
-            position: relative;
-            display: inline-block;
-        }
-
-        #heat-bar-fill {
-            width: 0%;
-            height: 100%;
-            background: #ff3333;
-            box-shadow: 0 0 5px #ff3333;
-            transition: width 0.1s;
-        }
-
-        #story-box {
-            position: absolute;
-            bottom: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 560px;
-            background: rgba(0, 5, 12, 0.92);
-            border: 1px solid rgba(0, 170, 255, 0.4);
-            border-top: 3px solid #00aaff;
-            padding: 12px 20px;
-            display: none;
-            z-index: 100;
-            backdrop-filter: blur(8px);
-        }
-
-        .story-speaker {
-            color: #00aaff;
-            font-weight: 700;
-            font-size: 14px;
-            letter-spacing: 2px;
-            margin-bottom: 4px;
-            text-transform: uppercase;
-            font-family: 'Share Tech Mono', monospace;
-        }
-
-        .story-speaker.enemy {
-            color: #ff3333;
-        }
-
-        .story-text {
-            color: #ddd;
-            font-size: 15px;
-            font-weight: 500;
-            font-style: italic;
-            line-height: 1.3;
-        }
-
-        .menu-screen {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: url('assets/bg.png') center/cover no-repeat;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            z-index: 200;
-        }
-
-        .menu-overlay {
-            pointer-events: none;
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(5, 10, 15, 0.85);
-            z-index: 0;
-            backdrop-filter: blur(5px);
-        }
-
-        .menu-content {
-            position: relative;
-            z-index: 1;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-
-        #game-title {
-            font-size: 90px;
-            margin-bottom: 5px;
-            text-transform: uppercase;
-            letter-spacing: 8px;
-            color: #00aaff;
-            text-shadow: 0 0 40px rgba(0, 170, 255, 0.7);
-            font-weight: 700;
-            text-align: center;
-            font-family: 'Oswald', sans-serif;
-        }
-
-        .beskar-display {
-            font-size: 32px;
-            color: #a9b8c2;
-            margin-bottom: 40px;
-            font-family: 'Share Tech Mono', monospace;
-            text-shadow: 0 0 10px rgba(169, 184, 194, 0.5);
-            font-weight: bold;
-        }
-
-        .beskar-display span {
-            color: #fff;
-            font-size: 42px;
-        }
-
-        .btn {
-            padding: 15px 50px;
-            font-size: 24px;
-            font-weight: 700;
-            font-family: 'Oswald', sans-serif;
-            background: rgba(0, 170, 255, 0.05);
-            color: #00aaff;
-            border: 2px solid #00aaff;
-            cursor: pointer;
-            transition: all 0.2s;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            clip-path: polygon(10px 0, 100% 0, calc(100% - 10px) 100%, 0 100%);
-            margin-bottom: 20px;
-            width: 400px;
-            text-align: center;
-            backdrop-filter: blur(4px);
-            pointer-events: auto;
-        }
-
-        .btn:hover {
-            background: #00aaff;
-            color: #000;
-            box-shadow: 0 0 30px #00aaff;
-            transform: scale(1.05);
-        }
-
-        .primary-btn {
-            background: rgba(0, 170, 255, 0.3);
-        }
-
-        .diff-btn {
-            padding: 10px 20px;
-            font-size: 18px;
-            font-weight: bold;
-            background: rgba(0, 0, 0, 0.6);
-            color: #888;
-            border: 2px solid #555;
-            cursor: pointer;
-            transition: all 0.2s;
-            font-family: 'Oswald', sans-serif;
-            letter-spacing: 1px;
-        }
-
-        .diff-btn:hover {
-            color: #fff;
-            border-color: #fff;
-        }
-
-        .diff-btn.active {
-            background: rgba(0, 170, 255, 0.3);
-            color: #00aaff;
-            border-color: #00aaff;
-            box-shadow: 0 0 15px rgba(0, 170, 255, 0.5);
-        }
-
-        .upgrade-list {
-            width: 600px;
-            margin-bottom: 40px;
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-        }
-
-        .upgrade-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background: rgba(0, 0, 0, 0.6);
-            padding: 15px 20px;
-            border-left: 4px solid #00aaff;
-            backdrop-filter: blur(4px);
-        }
-
-        .upgrade-info h3 {
-            margin: 0 0 5px 0;
-            color: #fff;
-            font-family: 'Oswald', sans-serif;
-            font-size: 24px;
-        }
-
-        .upgrade-info p {
-            margin: 0;
-            color: #aaa;
-            font-family: 'Share Tech Mono', monospace;
-            font-size: 14px;
-        }
-
-        .upgrade-cost {
-            font-size: 24px;
-            color: #a9b8c2;
-            font-weight: bold;
-            font-family: 'Share Tech Mono', monospace;
-        }
-
-        .upgrade-btn {
-            padding: 10px 20px;
-            background: #00aaff;
-            color: #000;
-            font-weight: bold;
-            border: none;
-            cursor: pointer;
-            font-family: 'Oswald', sans-serif;
-            font-size: 18px;
-            clip-path: polygon(5px 0, 100% 0, calc(100% - 5px) 100%, 0 100%);
-            transition: all 0.2s;
-        }
-
-        .upgrade-btn:hover {
-            background: #fff;
-        }
-
-        .upgrade-btn:disabled {
-            background: #555;
-            color: #222;
-            cursor: not-allowed;
-        }
-
-        .perk-card {
-            background: rgba(0, 0, 0, 0.8);
-            border: 2px solid #00aaff;
-            border-radius: 8px;
-            padding: 30px 20px;
-            width: 250px;
-            text-align: center;
-            cursor: pointer;
-            transition: all 0.2s;
-            box-shadow: 0 5px 15px rgba(0, 170, 255, 0.1);
-            backdrop-filter: blur(8px);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            pointer-events: auto;
-        }
-
-        .perk-card:hover {
-            transform: translateY(-10px);
-            background: rgba(0, 170, 255, 0.15);
-            box-shadow: 0 10px 30px rgba(0, 170, 255, 0.4);
-            border-color: #fff;
-        }
-
-        .perk-card h3 {
-            color: #00aaff;
-            font-family: 'Oswald', sans-serif;
-            font-size: 24px;
-            margin-top: 0;
-            margin-bottom: 10px;
-        }
-
-        .perk-card p {
-            color: #ccc;
-            font-family: 'Share Tech Mono', monospace;
-            font-size: 16px;
-            margin-bottom: 0;
-            line-height: 1.4;
-        }
-
-        .vignette.grogu-active {
-            background: radial-gradient(circle, transparent 20%, rgba(0, 255, 170, 0.4) 80%, rgba(0, 255, 170, 0.8) 120%) !important;
-        }
+@import url('https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;700&family=Rajdhani:wght@400;500;700&family=Share+Tech+Mono&display=swap');
+
+:root {
+    --blue: #00aaff;
+    --gold: #ffaa00;
+    --green: #00ff88;
+    --red: #ff3333;
+    --beskar: #a9b8c2;
+    --bg: #010404;
+}
+
+* { box-sizing: border-box; }
+
+body {
+    margin: 0; padding: 0;
+    background-color: var(--bg);
+    color: #fff;
+    font-family: 'Rajdhani', sans-serif;
+    overflow: hidden;
+    cursor: none;
+    user-select: none;
+    touch-action: none;
+}
+
+#game-container { position: relative; width: 100vw; height: 100vh; }
+
+canvas { display: block; filter: contrast(1.15) saturate(1.25); }
+
+/* ── OVERLAYS ── */
+.vignette {
+    position: absolute; inset: 0;
+    background: radial-gradient(circle, transparent 30%, rgba(0,0,0,0.95) 120%);
+    pointer-events: none; z-index: 4;
+    transition: background 0.4s;
+}
+.damage-overlay {
+    position: absolute; inset: 0;
+    box-shadow: inset 0 0 0 rgba(255,0,0,0);
+    pointer-events: none; transition: box-shadow 0.1s; z-index: 6;
+}
+.damage-overlay.active { box-shadow: inset 0 0 220px rgba(255,0,0,0.85); }
+
+/* ── CANVAS FX ── */
+canvas.hit { animation: chromatic 0.22s ease-out; }
+@keyframes chromatic {
+    0%   { filter: contrast(1.15) saturate(1.25); }
+    20%  { filter: contrast(2.5) saturate(2.2) drop-shadow(5px 0 0 rgba(255,0,0,0.95)) drop-shadow(-5px 0 0 rgba(0,255,255,0.95)); }
+    100% { filter: contrast(1.15) saturate(1.25); }
+}
+
+/* Near-death heartbeat */
+.heartbeat { animation: hb 0.75s ease-in-out infinite; }
+@keyframes hb {
+    0%,100% { box-shadow: inset 0 0 60px rgba(255,0,0,0); }
+    50%      { box-shadow: inset 0 0 160px rgba(255,0,0,0.65); }
+}
+
+/* Grogu force */
+.vignette.grogu-active {
+    background: radial-gradient(circle, transparent 20%, rgba(0,255,170,0.35) 80%, rgba(0,255,170,0.7) 120%) !important;
+}
+
+/* ── WAVE INTRO ── */
+#wave-intro {
+    position: absolute; inset: 0; z-index: 50;
+    pointer-events: none; display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    opacity: 0; transition: opacity 0.25s;
+}
+#wave-intro.show { opacity: 1; }
+#wave-intro-bg {
+    position: absolute; inset: 0;
+    background: linear-gradient(180deg, rgba(0,0,0,0.92) 0%, rgba(0,5,18,0.98) 50%, rgba(0,0,0,0.92) 100%);
+    clip-path: polygon(0 28%, 100% 22%, 100% 78%, 0 82%);
+}
+#wave-intro-text {
+    position: relative;
+    font-family: 'Oswald', sans-serif; font-size: 96px; font-weight: 700;
+    color: #fff; letter-spacing: 12px; text-transform: uppercase;
+    text-shadow: 0 0 40px rgba(0,170,255,1), 0 0 100px rgba(0,170,255,0.4);
+    transform: scaleX(1.08);
+    animation: waveTextIn 0.4s cubic-bezier(0.22,1,0.36,1) both;
+}
+#wave-intro-number {
+    position: relative;
+    font-family: 'Share Tech Mono'; font-size: 22px; color: var(--gold);
+    letter-spacing: 8px; margin-top: 8px;
+}
+#wave-intro-sub {
+    position: relative;
+    font-family: 'Share Tech Mono'; font-size: 15px;
+    color: var(--blue); letter-spacing: 6px; margin-top: 6px;
+}
+#wave-intro-line {
+    position: relative; width: 340px; height: 2px; margin-top: 18px;
+    background: linear-gradient(90deg, transparent, var(--blue), transparent);
+}
+@keyframes waveTextIn {
+    from { transform: scaleX(0.8) scaleY(1.3); opacity: 0; }
+    to   { transform: scaleX(1.08) scaleY(1); opacity: 1; }
+}
+
+/* ── LOOT PING ── */
+.loot-ping {
+    position: absolute; border-radius: 50%;
+    border: 2px solid rgba(169,184,194,0.9);
+    pointer-events: none; z-index: 20;
+    animation: lping 0.55s ease-out forwards;
+    transform: translate(-50%, -50%);
+}
+@keyframes lping {
+    from { width: 8px; height: 8px; opacity: 1; }
+    to   { width: 90px; height: 90px; opacity: 0; }
+}
+
+/* ── KILL FEED ── */
+#kill-feed {
+    position: absolute; top: 70px; right: 20px;
+    display: flex; flex-direction: column; align-items: flex-end;
+    gap: 4px; pointer-events: none; z-index: 12;
+}
+.kill-entry {
+    font-family: 'Share Tech Mono'; font-size: 12px;
+    color: #fff; background: rgba(0,0,0,0.6);
+    padding: 3px 10px; border-right: 3px solid var(--red);
+    animation: killFade 2.5s ease-out forwards;
+}
+.kill-entry.streak { border-color: var(--gold); color: var(--gold); }
+@keyframes killFade {
+    0% { opacity: 1; transform: translateX(20px); }
+    70% { opacity: 1; transform: translateX(0); }
+    100% { opacity: 0; transform: translateX(10px); }
+}
+
+/* ── HUD BASE ── */
+.hud { position: absolute; pointer-events: none; z-index: 10; }
+
+/* TOP UI */
+#top-ui {
+    top: 12px; left: 50%; transform: translateX(-50%);
+    text-align: center; background: rgba(0,0,0,0.65);
+    border-bottom: 2px solid var(--blue);
+    padding: 8px 24px;
+    clip-path: polygon(0 0,100% 0,97% 100%,3% 100%);
+    backdrop-filter: blur(8px); white-space: nowrap;
+}
+#wave-text {
+    font-size: 17px; color: var(--blue); letter-spacing: 3px;
+    text-transform: uppercase; font-weight: 700;
+    font-family: 'Oswald', sans-serif; display: inline;
+}
+#wave-sub {
+    font-size: 11px; color: #aaa; text-transform: uppercase;
+    letter-spacing: 1px; font-family: 'Share Tech Mono', monospace;
+    display: inline; margin-left: 10px;
+}
+#wave-bar-bg {
+    width: 100%; height: 4px;
+    background: rgba(0,0,0,0.8);
+    border: 1px solid rgba(0,170,255,0.3);
+    margin: 5px auto 0; position: relative;
+}
+#wave-bar-fill {
+    width: 0%; height: 100%; background: var(--blue);
+    box-shadow: 0 0 8px var(--blue); transition: width 0.35s;
+}
+
+/* BOTTOM LEFT */
+#bottom-left {
+    bottom: 20px; left: 20px;
+    background: rgba(0,0,0,0.72);
+    border-left: 3px solid var(--blue);
+    padding: 12px 16px; min-width: 0; width: auto;
+    box-shadow: 0 0 20px rgba(0,170,255,0.12);
+    backdrop-filter: blur(10px);
+}
+.hud-value {
+    font-size: 28px; font-weight: 700; color: #fff;
+    line-height: 1; font-family: 'Oswald', sans-serif;
+}
+.hud-label {
+    font-size: 10px; color: #88ccff; text-transform: uppercase;
+    font-weight: 700; letter-spacing: 1px; margin-bottom: 1px;
+    font-family: 'Share Tech Mono', monospace;
+}
+#hp-bar-bg {
+    width: 100%; height: 5px; background: rgba(0,50,0,0.6);
+    border: 1px solid rgba(0,255,136,0.2); margin-top: 3px; position: relative;
+}
+#hp-bar-fill {
+    height: 100%; background: var(--green);
+    box-shadow: 0 0 6px var(--green); transition: width 0.25s, background 0.3s;
+}
+#heat-bar-bg {
+    width: 110px; height: 5px;
+    background: rgba(30,0,0,0.8);
+    border: 1px solid rgba(255,50,50,0.3);
+    position: relative; display: inline-block;
+}
+#heat-bar-fill {
+    width: 0%; height: 100%; background: var(--red);
+    box-shadow: 0 0 6px var(--red); transition: width 0.1s;
+}
+
+/* STRATAGEM / RIGHT */
+#stratagem-ui { bottom: 20px; right: 20px; text-align: right; }
+.stratagem-box {
+    background: rgba(0,0,0,0.72); border-right: 3px solid var(--gold);
+    padding: 8px 14px; backdrop-filter: blur(8px);
+    display: inline-block; margin-bottom: 6px;
+}
+.stratagem-title {
+    color: var(--gold); font-size: 11px; font-weight: 700;
+    letter-spacing: 1px; font-family: 'Share Tech Mono', monospace;
+}
+.stratagem-status {
+    font-size: 20px; color: #fff; font-weight: 700;
+    font-family: 'Oswald', sans-serif;
+}
+
+/* ── RANK BADGE ── */
+#rank-badge {
+    position: absolute; top: 12px; left: 20px;
+    background: rgba(0,0,0,0.72); border-left: 3px solid var(--gold);
+    padding: 8px 14px; backdrop-filter: blur(8px); z-index: 10;
+    pointer-events: none;
+}
+#rank-title {
+    font-family: 'Share Tech Mono'; font-size: 10px; color: var(--gold);
+    letter-spacing: 2px; text-transform: uppercase;
+}
+#rank-name {
+    font-family: 'Oswald'; font-size: 20px; font-weight: 700;
+    color: #fff; letter-spacing: 2px;
+}
+
+/* ── STREAK DISPLAY ── */
+#streak-display {
+    position: absolute; top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    pointer-events: none; z-index: 15;
+    text-align: center; opacity: 0;
+    transition: opacity 0.3s;
+}
+#streak-display.show { opacity: 1; }
+#streak-text {
+    font-family: 'Oswald'; font-size: 48px; font-weight: 700;
+    color: var(--gold); letter-spacing: 6px;
+    text-shadow: 0 0 30px var(--gold), 0 0 60px rgba(255,170,0,0.5);
+    animation: streakPop 0.4s cubic-bezier(0.22,1,0.36,1);
+}
+@keyframes streakPop {
+    from { transform: scale(0.5); opacity: 0; }
+    to   { transform: scale(1); opacity: 1; }
+}
+
+/* ── STORY BOX ── */
+#story-box {
+    position: absolute; bottom: 20px; left: 50%;
+    transform: translateX(-50%); width: 580px;
+    background: rgba(0,5,14,0.94);
+    border: 1px solid rgba(0,170,255,0.35);
+    border-top: 3px solid var(--blue);
+    padding: 14px 22px; display: none; z-index: 100;
+    backdrop-filter: blur(10px);
+    box-shadow: 0 0 30px rgba(0,170,255,0.15);
+}
+.story-speaker {
+    color: var(--blue); font-weight: 700; font-size: 14px;
+    letter-spacing: 2px; margin-bottom: 5px;
+    text-transform: uppercase; font-family: 'Share Tech Mono', monospace;
+    border-bottom: 1px solid rgba(0,170,255,0.25); padding-bottom: 4px;
+}
+.story-speaker.enemy { color: var(--red); border-bottom-color: rgba(255,50,50,0.25); }
+.story-text {
+    color: #ddd; font-size: 15px; font-weight: 500;
+    font-style: italic; line-height: 1.4;
+}
+
+/* ── MENUS ── */
+.menu-screen {
+    position: absolute; inset: 0;
+    background: url('assets/bg.png') center/cover no-repeat;
+    display: flex; flex-direction: column;
+    justify-content: center; align-items: center; z-index: 200;
+}
+.menu-overlay {
+    position: absolute; inset: 0;
+    background: rgba(3,8,16,0.88); z-index: 0;
+    backdrop-filter: blur(6px);
+}
+.menu-content {
+    position: relative; z-index: 1;
+    display: flex; flex-direction: column; align-items: center;
+    max-height: 90vh; overflow-y: auto;
+}
+.menu-content::-webkit-scrollbar { width: 4px; }
+.menu-content::-webkit-scrollbar-track { background: rgba(0,0,0,0.3); }
+.menu-content::-webkit-scrollbar-thumb { background: var(--blue); }
+
+#game-title {
+    font-size: 86px; margin-bottom: 2px; text-transform: uppercase;
+    letter-spacing: 8px; color: var(--blue);
+    text-shadow: 0 0 40px rgba(0,170,255,0.75), 0 0 80px rgba(0,170,255,0.3);
+    font-weight: 700; text-align: center; font-family: 'Oswald', sans-serif;
+    animation: titleGlow 3s ease-in-out infinite alternate;
+}
+@keyframes titleGlow {
+    from { text-shadow: 0 0 30px rgba(0,170,255,0.6), 0 0 60px rgba(0,170,255,0.2); }
+    to   { text-shadow: 0 0 60px rgba(0,170,255,1),   0 0 120px rgba(0,170,255,0.5); }
+}
+
+.beskar-display {
+    font-size: 28px; color: var(--beskar); margin-bottom: 14px;
+    font-family: 'Share Tech Mono', monospace;
+    text-shadow: 0 0 10px rgba(169,184,194,0.5); font-weight: bold;
+}
+.beskar-display span { color: #fff; font-size: 38px; }
+
+/* Stats row */
+.menu-stats-row {
+    display: flex; gap: 24px; margin-bottom: 14px;
+    font-family: 'Share Tech Mono'; font-size: 12px; color: #555;
+}
+.menu-stat { text-align: center; }
+.menu-stat-val { display: block; font-size: 20px; font-weight: 700; color: #aaa; }
+
+/* Rank display on menu */
+.menu-rank-display {
+    font-family: 'Oswald'; font-size: 18px; color: var(--gold);
+    letter-spacing: 3px; margin-bottom: 20px;
+    text-shadow: 0 0 12px rgba(255,170,0,0.5);
+}
+
+.btn {
+    padding: 14px 50px; font-size: 22px; font-weight: 700;
+    font-family: 'Oswald', sans-serif;
+    background: rgba(0,170,255,0.06); color: var(--blue);
+    border: 2px solid var(--blue); cursor: pointer;
+    transition: all 0.2s; text-transform: uppercase; letter-spacing: 2px;
+    clip-path: polygon(10px 0,100% 0,calc(100% - 10px) 100%,0 100%);
+    margin-bottom: 16px; width: 400px; text-align: center;
+    backdrop-filter: blur(4px); pointer-events: auto;
+}
+.btn:hover {
+    background: var(--blue); color: #000;
+    box-shadow: 0 0 35px var(--blue); transform: scale(1.04);
+}
+.primary-btn { background: rgba(0,170,255,0.28); }
+
+.diff-btn {
+    padding: 10px 18px; font-size: 17px; font-weight: bold;
+    background: rgba(0,0,0,0.6); color: #777;
+    border: 2px solid #444; cursor: pointer;
+    transition: all 0.2s; font-family: 'Oswald', sans-serif; letter-spacing: 1px;
+}
+.diff-btn:hover { color: #fff; border-color: #fff; }
+.diff-btn.active {
+    background: rgba(0,170,255,0.28); color: var(--blue);
+    border-color: var(--blue); box-shadow: 0 0 15px rgba(0,170,255,0.45);
+}
+
+/* ── UPGRADE MENU ── */
+.upgrade-list {
+    width: 640px; margin-bottom: 30px;
+    display: flex; flex-direction: column; gap: 12px;
+}
+.upgrade-row {
+    display: flex; justify-content: space-between; align-items: center;
+    background: rgba(0,0,0,0.6); padding: 14px 18px;
+    border-left: 4px solid var(--blue); backdrop-filter: blur(4px);
+    transition: background 0.2s;
+}
+.upgrade-row:hover { background: rgba(0,170,255,0.07); }
+.upgrade-info h3 {
+    margin: 0 0 4px 0; color: #fff;
+    font-family: 'Oswald', sans-serif; font-size: 22px;
+}
+.upgrade-info p {
+    margin: 0; color: #888; font-family: 'Share Tech Mono', monospace; font-size: 13px;
+}
+.upgrade-cost { font-size: 22px; color: var(--beskar); font-weight: bold; font-family: 'Share Tech Mono', monospace; }
+.upgrade-btn {
+    padding: 9px 18px; background: var(--blue); color: #000;
+    font-weight: bold; border: none; cursor: pointer;
+    font-family: 'Oswald', sans-serif; font-size: 17px;
+    clip-path: polygon(5px 0,100% 0,calc(100% - 5px) 100%,0 100%);
+    transition: all 0.2s;
+}
+.upgrade-btn:hover { background: #fff; transform: scale(1.05); }
+.upgrade-btn:disabled { background: #333; color: #555; cursor: not-allowed; }
+
+/* ── LEVEL UP ── */
+.perk-card {
+    background: rgba(0,0,0,0.85); border: 2px solid var(--blue);
+    border-radius: 8px; padding: 28px 18px; width: 240px;
+    text-align: center; cursor: pointer; transition: all 0.22s;
+    box-shadow: 0 5px 20px rgba(0,170,255,0.1); backdrop-filter: blur(8px);
+    display: flex; flex-direction: column; align-items: center;
+    justify-content: center; pointer-events: auto;
+}
+.perk-card:hover {
+    transform: translateY(-12px) scale(1.03);
+    background: rgba(0,170,255,0.14);
+    box-shadow: 0 14px 40px rgba(0,170,255,0.5);
+    border-color: #fff;
+}
+.perk-card.rare { border-color: var(--gold); box-shadow: 0 5px 20px rgba(255,170,0,0.2); }
+.perk-card.rare:hover { box-shadow: 0 14px 40px rgba(255,170,0,0.55); }
+.perk-card h3 {
+    color: var(--blue); font-family: 'Oswald', sans-serif;
+    font-size: 22px; margin-top: 0; margin-bottom: 8px;
+}
+.perk-card.rare h3 { color: var(--gold); }
+.perk-card p {
+    color: #bbb; font-family: 'Share Tech Mono', monospace;
+    font-size: 14px; margin-bottom: 0; line-height: 1.45;
+}
+.perk-rarity {
+    font-family: 'Share Tech Mono'; font-size: 10px;
+    letter-spacing: 2px; margin-bottom: 10px; text-transform: uppercase;
+}
+
+/* ── NOTIFICATIONS ── */
+#notif-area {
+    position: absolute; top: 80px; left: 50%;
+    transform: translateX(-50%);
+    display: flex; flex-direction: column; align-items: center;
+    gap: 6px; pointer-events: none; z-index: 50;
+}
+.notif-item {
+    font-family: 'Oswald'; font-size: 22px; font-weight: 700;
+    letter-spacing: 3px; text-transform: uppercase;
+    padding: 6px 20px;
+    background: rgba(0,0,0,0.75);
+    animation: notifIn 3.5s ease-out forwards;
+}
+@keyframes notifIn {
+    0%   { opacity: 0; transform: translateY(-10px) scale(0.9); }
+    12%  { opacity: 1; transform: translateY(0) scale(1); }
+    75%  { opacity: 1; }
+    100% { opacity: 0; transform: translateY(-6px); }
+}
+
+/* ── DAILY CONTRACT ── */
+#daily-contract {
+    background: rgba(0,170,255,0.07);
+    border: 1px solid rgba(0,170,255,0.25);
+    border-left: 4px solid var(--gold);
+    padding: 10px 16px; margin-bottom: 18px; text-align: left;
+    min-width: 400px;
+}
+
+/* ── SCROLLABLE MENU AREAS ── */
+.menu-scroll {
+    overflow-y: auto; max-height: 70vh; width: 100%;
+    scrollbar-width: thin; scrollbar-color: var(--blue) rgba(0,0,0,0.3);
+}
+
+/* ── SETTINGS ── */
+.setting-row {
+    display: flex; justify-content: space-between; align-items: center;
+    background: rgba(0,0,0,0.5); padding: 14px 20px;
+    border-left: 3px solid var(--blue); margin-bottom: 12px;
+}
+.setting-row.danger { border-left-color: var(--red); background: rgba(20,0,0,0.5); }
+.setting-label { font-family: 'Oswald'; font-size: 20px; color: #fff; }
+.setting-desc { font-family: 'Share Tech Mono'; font-size: 12px; color: #555; margin-top: 2px; }
+.setting-toggle {
+    background: rgba(0,170,255,0.2); border: 2px solid var(--blue);
+    color: var(--blue); font-family: 'Oswald'; font-size: 18px;
+    padding: 8px 20px; cursor: pointer; transition: all 0.2s;
+}
+.setting-toggle:hover { background: var(--blue); color: #000; }
+.setting-toggle.danger-btn {
+    background: rgba(255,0,0,0.12); border-color: var(--red);
+    color: var(--red);
+}
+.setting-toggle.danger-btn:hover { background: var(--red); color: #fff; }
+
+/* ── CUSTOM CURSOR ── */
+#cursor {
+    position: fixed; pointer-events: none; z-index: 9999;
+    width: 24px; height: 24px; transform: translate(-50%,-50%);
+}
+#cursor-ring {
+    position: absolute; inset: 0; border-radius: 50%;
+    border: 2px solid rgba(0,238,255,0.8);
+    transition: transform 0.08s, border-color 0.2s;
+}
+#cursor-dot {
+    position: absolute; top: 50%; left: 50%;
+    width: 4px; height: 4px; border-radius: 50%;
+    background: #fff; transform: translate(-50%,-50%);
+}
+#cursor.hot #cursor-ring { border-color: rgba(255,170,0,0.9); transform: scale(1.4); }
+#cursor.overheat #cursor-ring { border-color: rgba(255,50,50,0.9); animation: cursorFlash 0.3s infinite; }
+@keyframes cursorFlash { 50% { opacity: 0.4; } }
