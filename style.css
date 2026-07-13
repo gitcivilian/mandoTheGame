@@ -284,6 +284,8 @@ canvas.hit { animation: chromatic 0.22s ease-out; }
     display: flex; flex-direction: column;
     justify-content: center; align-items: center; z-index: 200;
 }
+/* Show a standard hand cursor on the initial menu, while gameplay keeps its tactical reticle. */
+#main-menu { cursor: pointer; }
 .menu-overlay {
     position: absolute; inset: 0;
     background: rgba(3,8,16,0.88); z-index: 0;
