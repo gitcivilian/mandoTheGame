@@ -36,6 +36,24 @@ A browser-based action game inspired by "The Mandalorian". Play as Mando, upgrad
 5. Adjust settings (shake, minimap, particles) as needed.
 6. Your progress is saved automatically in localStorage.
 
+## Controls
+
+| Action                | Keyboard/Mouse     | Description                                  |
+|-----------------------|--------------------|----------------------------------------------|
+| Move                  | W / A / S / D      | Move Mando up, left, down, right             |
+| Aim & Shoot           | Mouse (move/click) | Aim with mouse; left-click to shoot          |
+| Dash                  | Spacebar           | Perform a quick dash to evade enemies        |
+| Upgrade Menu          | U                  | Open upgrade menu between waves              |
+| Pause/Menu            | Esc                | Open pause or settings menu                  |
+| Interact/Pickup       | E                  | Pick up Beskar or Grogu power-ups            |
+
+- **Tips:**  
+  - Use dashing to escape tight situations and avoid overheating.
+  - Upgrades are accessible at the end of each wave or by pressing **U**.
+  - Grogu power-ups provide temporary bonuses—grab them quickly!
+
+---
+
 ## Installation & Running
 
 1. Clone the repository:
