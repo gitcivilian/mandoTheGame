@@ -1,3 +1,88 @@
+// === ENEMY VARIETY & BOSS WAVES ADDITIONS START ===
+// Define enemy types
+const ENEMY_TYPES = {
+    normal: { hp: 30, speed: 1.2, damage: 8, color: "#888" },
+    bruiser: { hp: 80, speed: 0.7, damage: 15, color: "#B22222" },
+    runner: { hp: 18, speed: 2.2, damage: 5, color: "#4682B4" },
+    boss: { hp: 300, speed: 1.0, damage: 25, color: "#FFD700", special: true }
+};
+
+// Wave enemy spawn logic
+function spawnEnemies(waveNum) {
+    let enemies = [];
+    if (waveNum % 5 === 0) {
+        // Boss wave
+        enemies.push({
+            type: "boss",
+            ...ENEMY_TYPES.boss
+        });
+        // Add minions
+        for (let i = 0; i < waveNum / 2; i++) {
+            let mType = Math.random() > 0.5 ? "runner" : "bruiser";
+            enemies.push({
+                type: mType,
+                ...ENEMY_TYPES[mType]
+            });
+        }
+    } else {
+        // Standard wave: mix of normal, bruiser, runner
+        for (let i = 0; i < waveNum * 2; i++) {
+            let rand = Math.random();
+            let type = rand < 0.6 ? "normal" : rand < 0.8 ? "runner" : "bruiser";
+            enemies.push({
+                type,
+                ...ENEMY_TYPES[type]
+            });
+        }
+    }
+    return enemies;
+}
+
+// Visual enemy rendering example, integrate into actual render function
+function renderEnemy(context, enemy) {
+    context.fillStyle = enemy.color;
+    context.fillRect(enemy.x, enemy.y, enemy.width || 24, enemy.height || 24);
+}
+
+// Boss wave banner logic
+function showBanner(msg) {
+    const banner = document.createElement('div');
+    banner.innerText = msg;
+    banner.style.position = 'absolute';
+    banner.style.top = '30px';
+    banner.style.left = '50%';
+    banner.style.transform = 'translateX(-50%)';
+    banner.style.background = '#222';
+    banner.style.color = '#FFD700';
+    banner.style.fontSize = '2rem';
+    banner.style.padding = '16px 40px';
+    banner.style.borderRadius = '12px';
+    banner.style.zIndex = '9999';
+    document.body.appendChild(banner);
+    setTimeout(() => banner.remove(), 1800);
+}
+
+// Example: show banner on boss wave
+function onWaveStart(waveNum) {
+    if (waveNum % 5 === 0) showBanner("Boss Wave!");
+}
+
+// Boss special attack (simple AoE pulse)
+function bossSpecialAttack(enemy, player) {
+    if (enemy.type === "boss" && Math.random() < 0.01) { // ~1% chance per frame
+        let dx = player.x - enemy.x;
+        let dy = player.y - enemy.y;
+        let dist = Math.sqrt(dx*dx + dy*dy);
+        if (dist < 96) {
+            // Apply damage to player (implement player.damage function as needed)
+            if (typeof player.damage === 'function') player.damage(18);
+            // Optionally, visual effect here
+        }
+    }
+}
+// === ENEMY VARIETY & BOSS WAVES ADDITIONS END ===
+
+
         let currentDifficulty = { mult: 1.0, beskar: 2 };
 
         function setDiff(lvl, el) {
