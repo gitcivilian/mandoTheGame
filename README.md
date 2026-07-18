@@ -7,10 +7,12 @@ A browser-based action game inspired by "The Mandalorian". Play as Mando, upgrad
 - Play as Mando with custom controls and visuals.
 - Survive increasingly difficult waves of enemies.
 - Upgrade your stats with in-game currency (Beskar).
+- Each upgrade now has a thematic description.
 - Custom HUD, overlays, and visual effects.
 - Grogu (Baby Yoda) power-ups and effects.
 - Multiple difficulty levels.
 - Persistent save system using localStorage.
+- New settings option for toggling sound effects.
 
 ## Game Structure
 
@@ -33,7 +35,7 @@ A browser-based action game inspired by "The Mandalorian". Play as Mando, upgrad
 2. Use keyboard/mouse to control Mando.
 3. Survive waves, defeat enemies, collect Beskar.
 4. Upgrade your abilities in the upgrade menu.
-5. Adjust settings (shake, minimap, particles) as needed.
+5. Adjust settings (shake, minimap, particles, sound effects) as needed.
 6. Your progress is saved automatically in localStorage.
 
 ## Controls
@@ -53,6 +55,11 @@ A browser-based action game inspired by "The Mandalorian". Play as Mando, upgrad
   - Grogu power-ups provide temporary bonuses—grab them quickly!
 
 ---
+
+## Settings
+
+- Shake, minimap, particles, and sound effects can all be toggled in the settings menu.
+- Sound effects can be toggled ON/OFF for accessibility or preference.
 
 ## Installation & Running
 
