@@ -11,10 +11,10 @@
         }
 
         const UPGRADES = {
-            hp: { name: "Beskar Plating (Max HP)", baseCost: 50, maxLvl: 10, valPerLvl: 20 },
-            heat: { name: "Cooling Systems (Heat Drain)", baseCost: 40, maxLvl: 10, valPerLvl: 5 },
-            dash: { name: "Jetpack Thrusters (Dash Regen)", baseCost: 60, maxLvl: 5, valPerLvl: 0.3 },
-            damage: { name: "Amban Rifle Core (Damage)", baseCost: 100, maxLvl: 5, valPerLvl: 1 }
+            hp: { name: "Beskar Plating (Max HP)", baseCost: 50, maxLvl: 10, valPerLvl: 20, desc: "Increase your max HP with legendary Beskar armor plating." },
+            heat: { name: "Cooling Systems (Heat Drain)", baseCost: 40, maxLvl: 10, valPerLvl: 5, desc: "Upgrade your suit's cooling system to reduce heat faster." },
+            dash: { name: "Jetpack Thrusters (Dash Regen)", baseCost: 60, maxLvl: 5, valPerLvl: 0.3, desc: "Enhance jetpack thruster efficiency for faster dash regeneration." },
+            damage: { name: "Amban Rifle Core (Damage)", baseCost: 100, maxLvl: 5, valPerLvl: 1, desc: "Improve your rifle core for increased damage output." }
         };
 
         let save = {
@@ -47,7 +47,7 @@
                 save['lvl_' + key]++;
                 saveGame();
                 renderUpgrades();
-                if (window.audio) audio.powerup();
+                if (window.audio && settings.sound) audio.powerup();
             }
         }
 
@@ -69,8 +69,10 @@
             // sync button states
             let sh = document.getElementById('sett-shake');
             let mm = document.getElementById('sett-minimap');
+            let snd = document.getElementById('sett-sound');
             if (sh) { sh.innerText = settings.shake ? 'ON' : 'OFF'; sh.style.color = settings.shake ? '#00aaff' : '#555'; sh.style.borderColor = settings.shake ? '#00aaff' : '#555'; }
             if (mm) { mm.innerText = settings.minimap ? 'ON' : 'OFF'; mm.style.color = settings.minimap ? '#00aaff' : '#555'; mm.style.borderColor = settings.minimap ? '#00aaff' : '#555'; }
+            if (snd) { snd.innerText = settings.sound ? 'ON' : 'OFF'; snd.style.color = settings.sound ? '#00aaff' : '#555'; snd.style.borderColor = settings.sound ? '#00aaff' : '#555'; }
             document.getElementById('sett-part-low').style.borderColor = settings.particles === 'low' ? '#00aaff' : '#555';
             document.getElementById('sett-part-high').style.borderColor = settings.particles === 'high' ? '#00aaff' : '#555';
         }
@@ -89,6 +91,7 @@
         <div class="upgrade-row">
             <div class="upgrade-info">
                 <h3>${u.name}</h3>
+                <p>${u.desc}</p>
                 <p>Level ${lvl} / ${u.maxLvl}</p>
             </div>
             <div style="display:flex; align-items:center; gap:20px;">
@@ -106,5 +109,12 @@
         let settings = {
             shake: localStorage.getItem('sett_shake') !== 'false',
             minimap: localStorage.getItem('sett_minimap') !== 'false',
-            particles: localStorage.getItem('sett_particles') || 'high'
+            particles: localStorage.getItem('sett_particles') || 'high',
+            sound: localStorage.getItem('sett_sound') !== 'false'
         };
+
+        function toggleSound() {
+            settings.sound = !settings.sound;
+            localStorage.setItem('sett_sound', settings.sound);
+            showSettings();
+        }
