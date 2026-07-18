@@ -7,6 +7,24 @@
     <title>Mando The Game</title>
 </head>
 <body>
+    <!-- Combat Feedback HUD -->
+    <div id="combat-hud">
+      <div id="dash-cooldown" class="cooldown-indicator">
+        <span class="icon">🛡️</span>
+        <span class="cooldown-label">Dash</span>
+        <span class="cooldown-timer" id="dash-timer"></span>
+      </div>
+      <div id="weapon-cooldown" class="cooldown-indicator">
+        <span class="icon">🔫</span>
+        <span class="cooldown-label">Weapon</span>
+        <span class="cooldown-timer" id="weapon-timer"></span>
+      </div>
+    </div>
+    <!-- Floating Combat Text Container -->
+    <div id="combat-float-text"></div>
+    <!-- Wave Banner -->
+    <div id="wave-banner" class="wave-banner"></div>
+
     <div id="game-container"></div>
     <script src="script.js"></script>
 </body>
